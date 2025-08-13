@@ -49,7 +49,7 @@ export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
               color="primary"
               variant="flat"
               size="md"
-              className="p-0 max-h-6 rounded-md"
+              className="p-0 max-h-6 rounded-md line-clamp-1"
             >
               {word}
             </Chip>
