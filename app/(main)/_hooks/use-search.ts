@@ -38,6 +38,27 @@ export const useSearch = () => {
     }
   };
 
+  const handleSynonymSearch = async (synonym: string) => {
+    setWord(synonym);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await ky
+        .post("/api/word", {
+          json: { word: synonym },
+        })
+        .json<Word>();
+
+      setResult(res);
+      setWord("");
+    } catch (err) {
+      setError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     word,
     setWord,
@@ -45,5 +66,6 @@ export const useSearch = () => {
     loading,
     error,
     handleSearch,
+    handleSynonymSearch,
   };
 };

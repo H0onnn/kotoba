@@ -4,6 +4,9 @@ export interface Word {
   yomigana: string;
   meaning_kr: string;
   part_of_speech: string;
+  homonyms: Omit<ExWord, "yomigana">[];
+  synonyms: ExWord[];
+  compound_word: ExWord[];
   examples: {
     sentence_jp: string;
     yomigana: string;
@@ -11,6 +14,8 @@ export interface Word {
   }[];
   savedAt: number;
 }
+
+interface ExWord extends Pick<Word, "word_jp" | "yomigana" | "meaning_kr"> {}
 
 const STORAGE_KEY = "kotoba-wordbook";
 

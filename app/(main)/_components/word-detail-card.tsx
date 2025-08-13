@@ -1,22 +1,67 @@
 "use client";
 
-import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Divider } from "@heroui/divider";
 import { Button } from "@heroui/button";
 import { BookmarkFilledIcon, BookmarkIcon } from "@/components/icons";
 import type { Word } from "@/lib/wordbook";
 
+type ChipColor = "warning" | "secondary" | "success";
+
+interface WordSectionProps {
+  title: string;
+  words: Array<{ word_jp: string; yomigana?: string; meaning_kr: string }>;
+  color: ChipColor;
+  onWordClick: (word: string) => void;
+}
+
+const WordSection = ({ title, words, color, onWordClick }: WordSectionProps) => {
+  if (!words || words.length === 0) return null;
+
+  const getHoverClass = (color: ChipColor) => {
+    switch (color) {
+      case "warning": return "hover:bg-warning-200";
+      case "secondary": return "hover:bg-secondary-200";
+      case "success": return "hover:bg-success-200";
+    }
+  };
+
+  return (
+    <div>
+      <h3 className="mb-3 text-lg font-semibold">{title}</h3>
+      <div className="flex flex-wrap gap-2">
+        {words.map((word, index) => (
+          <Chip
+            key={index}
+            color={color}
+            variant="flat"
+            className={`cursor-pointer transition-colors ${getHoverClass(color)}`}
+            onClick={() => onWordClick(word.word_jp)}
+          >
+            <span className="font-medium">{word.word_jp}</span>
+            <span className="text-xs text-gray-600 ml-1">
+              {word.yomigana ? `(${word.yomigana})` : word.meaning_kr}
+            </span>
+          </Chip>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 interface WordDetailCardProps {
   word: Word;
   onToggleSave: () => void;
   isSaved: boolean;
+  onSynonymClick: (synonym: string) => void;
 }
 
 export const WordDetailCard = ({
   word,
   onToggleSave,
   isSaved,
+  onSynonymClick,
 }: WordDetailCardProps) => {
   return (
     <Card className="p-4 w-full">
@@ -79,6 +124,29 @@ export const WordDetailCard = ({
           ))}
         </div>
       </CardBody>
+
+      <CardFooter className="p-0 pt-4">
+        <div className="space-y-6 w-full">
+          <WordSection
+            title="요미가나 같은 단어"
+            words={word.homonyms || []}
+            color="warning"
+            onWordClick={onSynonymClick}
+          />
+          <WordSection
+            title="유의어"
+            words={word.synonyms || []}
+            color="secondary"
+            onWordClick={onSynonymClick}
+          />
+          <WordSection
+            title="복합어"
+            words={word.compound_word || []}
+            color="success"
+            onWordClick={onSynonymClick}
+          />
+        </div>
+      </CardFooter>
     </Card>
   );
 };

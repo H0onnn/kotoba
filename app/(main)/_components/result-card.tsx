@@ -6,9 +6,10 @@ import type { Word } from "@/lib/wordbook";
 
 interface ResultCardProps {
   word: Word;
+  onSynonymClick: (synonym: string) => void;
 }
 
-export const ResultCard = ({ word }: ResultCardProps) => {
+export const ResultCard = ({ word, onSynonymClick }: ResultCardProps) => {
   const { handleSaveWord, isAlreadySaved } = useWordSave(word);
 
   return (
@@ -16,6 +17,7 @@ export const ResultCard = ({ word }: ResultCardProps) => {
       word={word}
       onToggleSave={handleSaveWord}
       isSaved={isAlreadySaved}
+      onSynonymClick={onSynonymClick}
     />
   );
 };

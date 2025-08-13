@@ -26,6 +26,9 @@ export const useWordSave = (word: Word) => {
         meaning_kr: word.meaning_kr,
         examples: word.examples,
         part_of_speech: word.part_of_speech,
+        synonyms: word.synonyms,
+        homonyms: word.homonyms,
+        compound_word: word.compound_word,
       });
       setIsAlreadySaved(true);
     }
