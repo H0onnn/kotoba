@@ -146,3 +146,29 @@ export const BookmarkIcon = ({
     />
   </svg>
 );
+
+export const DeleteIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 24 24"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M21 4H8l-1 3H3a1 1 0 000 2h1l1.5 13A2 2 0 007.5 24h9a2 2 0 002-1.81L20 9h1a1 1 0 000-2h-4l-1-3zM10 3.5c0-.28.22-.5.5-.5h3c.28 0 .5.22.5.5V4h-4v-.5z"
+      fill="currentColor"
+    />
+    <path
+      d="M10 11v6a1 1 0 002 0v-6a1 1 0 00-2 0zM14 11v6a1 1 0 002 0v-6a1 1 0 00-2 0z"
+      fill="currentColor"
+    />
+  </svg>
+);

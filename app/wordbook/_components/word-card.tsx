@@ -1,6 +1,6 @@
 "use client";
 
-import { BookmarkFilledIcon } from "@/components/icons";
+import { BookmarkFilledIcon, DeleteIcon } from "@/components/icons";
 import { type Word } from "@/lib/wordbook";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
@@ -23,9 +23,7 @@ export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
         <div className="flex justify-between items-center w-full">
           <div className="flex gap-1 items-center">
             <Chip size="sm">{word.part_of_speech}</Chip>
-            <h2 className="text-2xl font-bold line-clamp-1">
-              {word.word_jp}
-            </h2>
+            <h2 className="text-2xl font-bold line-clamp-1">{word.word_jp}</h2>
             <p className="text-lg text-gray-600 line-clamp-1">
               ({word.yomigana})
             </p>
@@ -36,9 +34,9 @@ export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
               e.stopPropagation();
               onDelete();
             }}
-            className="text-yellow-500 cursor-pointer hover:text-yellow-600"
+            className="text-red-500 cursor-pointer hover:text-red-600"
           >
-            <BookmarkFilledIcon size={24} />
+            <DeleteIcon size={20} />
           </div>
         </div>
       </CardHeader>

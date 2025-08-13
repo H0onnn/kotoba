@@ -4,6 +4,7 @@ import { type Word, getWordbook, removeWordFromBook } from "@/lib/wordbook";
 import { useState, useEffect } from "react";
 import { WordCard } from "./word-card";
 import { WordDetailModal } from "./word-detail-modal";
+import { subtitle } from "@/components/primitives";
 
 export const WordCardGrid = () => {
   const [words, setWords] = useState<Word[]>([]);
@@ -28,6 +29,10 @@ export const WordCardGrid = () => {
     removeWordFromBook(wordJp);
     setWords(getWordbook());
   };
+
+  if (!words.length) {
+    return <h2 className={subtitle()}>저장된 단어가 없어요</h2>;
+  }
 
   return (
     <>
