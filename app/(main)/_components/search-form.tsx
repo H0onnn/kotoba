@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback } from "react";
 import { SearchIcon } from "@/components/icons";
 import { Form } from "@heroui/form";
 import { Input } from "@heroui/input";
@@ -19,10 +18,6 @@ export const SearchForm = ({
   onSearch,
   isLoading,
 }: SearchFormProps) => {
-  const ref = useCallback((node: any) => {
-    node?.focus();
-  }, []);
-
   return (
     <Form
       className="flex flex-row items-center space-x-2"
@@ -32,7 +27,6 @@ export const SearchForm = ({
       }}
     >
       <Input
-        ref={ref}
         aria-label="Search"
         classNames={{
           inputWrapper: "bg-default-100",
