@@ -5,7 +5,6 @@ import clsx from "clsx";
 import { Providers } from "@/providers";
 
 import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
@@ -33,11 +32,15 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="kr">
-      <head />
+      <head>
+        <link
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+          rel="stylesheet"
+        />
+      </head>
       <body
         className={clsx(
-          "min-h-screen text-foreground bg-background font-sans antialiased",
-          fontSans.variable
+          "min-h-screen font-sans antialiased text-foreground bg-background"
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
