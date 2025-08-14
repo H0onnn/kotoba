@@ -16,14 +16,22 @@ interface WordSectionProps {
   onWordClick: (word: string) => void;
 }
 
-const WordSection = ({ title, words, color, onWordClick }: WordSectionProps) => {
+const WordSection = ({
+  title,
+  words,
+  color,
+  onWordClick,
+}: WordSectionProps) => {
   if (!words || words.length === 0) return null;
 
   const getHoverClass = (color: ChipColor) => {
     switch (color) {
-      case "warning": return "hover:bg-warning-200";
-      case "secondary": return "hover:bg-secondary-200";
-      case "success": return "hover:bg-success-200";
+      case "warning":
+        return "hover:bg-warning-200";
+      case "secondary":
+        return "hover:bg-secondary-200";
+      case "success":
+        return "hover:bg-success-200";
     }
   };
 
@@ -36,11 +44,11 @@ const WordSection = ({ title, words, color, onWordClick }: WordSectionProps) => 
             key={index}
             color={color}
             variant="flat"
-            className={`cursor-pointer transition-colors ${getHoverClass(color)}`}
+            className={`transition-colors cursor-pointer ${getHoverClass(color)}`}
             onClick={() => onWordClick(word.word_jp)}
           >
             <span className="font-medium">{word.word_jp}</span>
-            <span className="text-xs text-gray-600 ml-1">
+            <span className="ml-1 text-xs text-gray-600">
               {word.yomigana ? `(${word.yomigana})` : word.meaning_kr}
             </span>
           </Chip>
@@ -117,9 +125,30 @@ export const WordDetailCard = ({
               <p className="mt-1 text-sm text-gray-600 dark:text-gray-900">
                 {example.yomigana}
               </p>
-              <p className="mt-1 text-sm text-blue-600 dark:text-primary-50">
+              <p className="mt-1 text-sm text-blue-600 dark:text-primary-100">
                 {example.meaning_kr}
               </p>
+
+              {example.example_words && example.example_words.length > 0 && (
+                <div className="mt-2">
+                  <p className="mb-1 text-xs text-gray-500 dark:text-gray-950">
+                    포함된 단어:
+                  </p>
+                  <div className="flex flex-wrap gap-1 items-center">
+                    {example.example_words.map((exampleWord, wordIndex) => (
+                      <Chip
+                        key={wordIndex}
+                        size="sm"
+                        variant="bordered"
+                        className="text-xs cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-400 min-w-6 min-h-6"
+                        onClick={() => onSynonymClick(exampleWord.word_jp)}
+                      >
+                        {exampleWord.word_jp}
+                      </Chip>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

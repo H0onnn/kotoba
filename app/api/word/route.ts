@@ -39,16 +39,29 @@ export async function POST(req: Request) {
    - 입력 단어와 관련 없는 뜻도 포함 가능 (발음이 동일한 경우만)
 6. **synonyms**: 입력 단어와 뜻이 비슷하거나 관련 있는 일본어 단어 (최대 3개)
    - 각 항목: { "word_jp": "", "yomigana": "", "meaning_kr": "" }
-7. **compound_word**: 입력 단어를 사용한 복합어 단어 (존재할 경우에만, 최소 0개 ~ 최대 3개)
+7. **compounds**: 입력 단어를 사용한 복합어 단어 (존재할 경우에만, 최소 0개 ~ 최대 3개)
     - 각 항목: { "word_jp": "", "yomigana": "", "meaning_kr": "" }
 8. **examples**:
    - 총 2개 작성.
    - 반드시 요청 단어(word_jp)가 그대로 포함되어야 함.
    - 1개는 구어체, 1개는 문어체.
    - 속어, 번역투 금지.
-9. **각 예문 데이터**
-   - sentence_jp: 일본어 문장
-   - yomigana: 모든 한자에 요미가나 추가 (현대 표준 발음 기준)
+9. **example_words**:
+   - 제공된 예문 속에서 '검색어를 제외한' 주요 단어를 원형 형태로 넣습니다. **(형태소 분석을 흉내내서 명사·동사·형용사 등 의미 있는 단어만 추출)**
+   - **제공된 예문에 있는 모든 단어를 추출할 것**
+   - 검색어(word_jp)는 절대 포함하지 마세요.
+   - 조사, 조동사, 감탄사, 접속사, 수식어(부사)는 제외하세요. (예: は, を, に, が, する, だろう 등)
+   - 명사, 동사, 형용사, 형용동사만 포함.
+   - 모든 항목은 원형(사전형)으로 표기.
+   - 각 항목: { "word_jp": "<문자열>", "yomigana": "<문자열>" }
+10. **각 예문 데이터 작성 규칙**
+   - sentence_jp: 일본어 원문 (한자 포함 가능)
+   - yomigana: sentence_jp 전체를 **히라가나로만 변환**  
+     - **중요**: 절대로 한자, 가타카나, 숫자, 로마자, 특수기호 포함 금지.
+     - 올바른 현대 표준 발음으로만 작성.
+     - 단어와 단어 사이에 띄어쓰기 금지.
+     - 예: sentence_jp: "万博の開催は、地域経済の活性化に大きく貢献するだろう。"  
+       → yomigana: "ばんぱくのかいさいはちいきけいざいのかっせいかにおおきくこうけんするだろう"
    - meaning_kr: 의미가 자연스러운 한국어 번역
 
 ## 출력 JSON 예시
@@ -64,7 +77,7 @@ export async function POST(req: Request) {
   "synonyms": [
     { "word_jp": "心中事件", "yomigana": "しんじゅうじけん", "meaning_kr": "동반 자살 사건" },
   ],
-  "compound_word": [
+  "compounds": [
     { "word_jp": "心中尽", "yomigana": "しんじゅうずく", "meaning_kr": "상대에 대한 신의·애정을 일관하다[끝까지 변치 않다]" },
     { "word_jp": "心中立て", "yomigana": "しんじゅうだて", "meaning_kr": "끝까지 남에 대한 의리·약속을 지킴" }
   ],
@@ -72,12 +85,44 @@ export async function POST(req: Request) {
     {
       "sentence_jp": "仕事と心中する",
       "yomigana": "しごととしんじゅうする",
-      "meaning_kr": "일과 운명을 같이하다"
+      "meaning_kr": "일과 운명을 같이하다",
+      "example_words": [
+        {
+          "word_jp": "仕事",
+          "yomigana": "しごと"
+        }
+      ]
     },
     {
       "sentence_jp": "心中事件の報道は、多くの人々に衝撃を与えた。",
       "yomigana": "しんじゅうじけんのほうどうは、おおくのひとびとにしょうげきをあたえた。",
-      "meaning_kr": "동반 자살 사건 보도는 많은 사람들에게 충격을 주었다."
+      "meaning_kr": "동반 자살 사건 보도는 많은 사람들에게 충격을 주었다.",
+      "example_words": [
+        {
+          "word_jp": "事件",
+          "yomigana": "じけん"
+        },
+        {
+          "word_jp": "報道",
+          "yomigana": "ほうどう"
+        },
+        {
+          "word_jp": "多い",
+          "yomigana": "おおい"
+        },
+        {
+          "word_jp": "人々",
+          "yomigana": "ひとびと"
+        },
+        {
+          "word_jp": "衝撃",
+          "yomigana": "しょうげき"
+        },
+        {
+          "word_jp": "与える",
+          "yomigana": "あたえる"
+        }
+      ]
     }
   ]
 }
@@ -87,8 +132,8 @@ export async function POST(req: Request) {
       model: "gemini-2.5-flash-lite",
       contents: prompt,
       config: {
-        temperature: 0.0,
-        topP: 0.1,
+        // temperature: 0.0,
+        // topP: 0.1,
         responseMimeType: "application/json",
       },
     });

@@ -11,6 +11,7 @@ export interface Word {
     sentence_jp: string;
     yomigana: string;
     meaning_kr: string;
+    example_words: Omit<ExWord, "meaning_kr">[];
   }[];
   savedAt: number;
 }
