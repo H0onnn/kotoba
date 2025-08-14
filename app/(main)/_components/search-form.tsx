@@ -30,7 +30,7 @@ export const SearchForm = ({
         aria-label="Search"
         classNames={{
           inputWrapper: "bg-default-100",
-          input: "text-sm",
+          input: "text-base",
         }}
         size="lg"
         placeholder="단어를 검색해보세요..."
