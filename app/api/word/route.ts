@@ -172,8 +172,8 @@ export async function POST(req: Request) {
       model: "gemini-2.5-flash-lite",
       contents: prompt,
       config: {
-        // temperature: 0.0,
-        // topP: 0.1,
+        temperature: 0.0,
+        topP: 0.1,
         responseMimeType: "application/json",
       },
     });
