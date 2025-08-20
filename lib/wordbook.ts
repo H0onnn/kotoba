@@ -6,11 +6,12 @@ export interface Word {
   part_of_speech: string;
   homonyms: Omit<ExWord, "yomigana">[];
   synonyms: ExWord[];
-  compound_word: ExWord[];
+  compounds: ExWord[];
   examples: {
     sentence_jp: string;
     yomigana?: string;
     meaning_kr: string;
+    highlight_word: string;
     example_words: Omit<ExWord, "meaning_kr">[];
   }[];
   savedAt: number;

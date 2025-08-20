@@ -5,6 +5,7 @@ import { Chip } from "@heroui/chip";
 import { Divider } from "@heroui/divider";
 import { Button } from "@heroui/button";
 import { BookmarkFilledIcon, BookmarkIcon } from "@/components/icons";
+import { createHighlightedElements } from "@/utils/highlight";
 import type { Word } from "@/lib/wordbook";
 
 type ChipColor = "warning" | "secondary" | "success";
@@ -121,7 +122,13 @@ export const WordDetailCard = ({
               key={index}
               className="p-3 bg-gray-50 rounded-lg dark:bg-gray-500"
             >
-              <p className="text-base font-medium">{example.sentence_jp}</p>
+              <p className="text-base font-medium">
+                {createHighlightedElements(
+                  example.sentence_jp,
+                  example.highlight_word,
+                  "bg-yellow-200 dark:bg-yellow-600 font-semibold"
+                )}
+              </p>
               <p className="mt-1 text-sm text-blue-600 dark:text-primary-100">
                 {example.meaning_kr}
               </p>
@@ -169,7 +176,7 @@ export const WordDetailCard = ({
           />
           <WordSection
             title="복합어"
-            words={word.compound_word || []}
+            words={word.compounds || []}
             color="success"
             onWordClick={onSynonymClick}
           />

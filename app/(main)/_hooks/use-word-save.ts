@@ -28,7 +28,7 @@ export const useWordSave = (word: Word) => {
         part_of_speech: word.part_of_speech,
         synonyms: word.synonyms,
         homonyms: word.homonyms,
-        compound_word: word.compound_word,
+        compounds: word.compounds,
       });
       setIsAlreadySaved(true);
     }
