@@ -1,6 +1,6 @@
 "use client";
 
-import { BookmarkFilledIcon, DeleteIcon } from "@/components/icons";
+import { BookmarkX } from "lucide-react";
 import { type Word } from "@/lib/wordbook";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
@@ -30,13 +30,16 @@ export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
           </div>
 
           <div
+            role="button"
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
             }}
-            className="text-red-500 cursor-pointer hover:text-red-600"
           >
-            <DeleteIcon size={20} />
+            <BookmarkX
+              size={20}
+              className="text-red-500 cursor-pointer hover:text-red-600"
+            />
           </div>
         </div>
       </CardHeader>
