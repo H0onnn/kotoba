@@ -9,7 +9,7 @@ export interface Word {
   compound_word: ExWord[];
   examples: {
     sentence_jp: string;
-    yomigana: string;
+    yomigana?: string;
     meaning_kr: string;
     example_words: Omit<ExWord, "meaning_kr">[];
   }[];

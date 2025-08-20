@@ -120,7 +120,6 @@ export async function POST(req: Request) {
     "examples": [
         {
             "sentence_jp": "パスワードを定期的に更新してください。",
-            "yomigana": "パスワードをていきてきにこうしんしてください。",
             "meaning_kr": "비밀번호를 정기적으로 갱신해 주세요.",
             "example_words": [
                 {
@@ -143,7 +142,6 @@ export async function POST(req: Request) {
         },
         {
             "sentence_jp": "最新の情報をウェブサイトで更新した。",
-            "yomigana": "さいしんのじょうほうをウェブサイトでこうしんした。",
             "meaning_kr": "최신 정보를 웹사이트에서 업데이트했다.",
             "example_words": [
                 {

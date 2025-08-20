@@ -122,9 +122,6 @@ export const WordDetailCard = ({
               className="p-3 bg-gray-50 rounded-lg dark:bg-gray-500"
             >
               <p className="text-base font-medium">{example.sentence_jp}</p>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-900">
-                {example.yomigana}
-              </p>
               <p className="mt-1 text-sm text-blue-600 dark:text-primary-100">
                 {example.meaning_kr}
               </p>
