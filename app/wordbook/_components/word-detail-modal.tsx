@@ -4,6 +4,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
 import { Chip } from "@heroui/chip";
 import { Divider } from "@heroui/divider";
 import type { Word } from "@/lib/wordbook";
+import { createHighlightedElements } from "@/utils/highlight";
 
 interface WordDetailModalProps {
   word: Word | null;
@@ -61,7 +62,13 @@ export const WordDetailModal = ({
                 key={index}
                 className="p-3 bg-gray-50 rounded-lg dark:bg-gray-500"
               >
-                <p className="text-base font-medium">{example.sentence_jp}</p>
+                <p className="text-base font-medium">
+                  {createHighlightedElements(
+                    example.sentence_jp,
+                    example.highlight_word,
+                    "bg-yellow-200 dark:bg-yellow-600 font-semibold"
+                  )}
+                </p>
                 <p className="mt-1 text-sm text-blue-600 dark:text-primary-50">
                   {example.meaning_kr}
                 </p>
