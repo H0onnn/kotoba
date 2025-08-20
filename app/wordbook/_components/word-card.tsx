@@ -24,9 +24,6 @@ export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
           <div className="flex gap-1 items-center">
             <Chip size="sm">{word.part_of_speech}</Chip>
             <h2 className="text-2xl font-bold line-clamp-1">{word.word_jp}</h2>
-            <p className="text-lg text-gray-600 line-clamp-1">
-              ({word.yomigana})
-            </p>
           </div>
 
           <div
