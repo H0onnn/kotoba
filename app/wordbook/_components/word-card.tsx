@@ -14,7 +14,7 @@ interface WordCardProps {
 export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
   return (
     <Card
-      className="p-3 w-full cursor-pointer min-h-[120px]"
+      className="p-3 w-full cursor-pointer min-h-[120px] max-h-[120px]"
       isPressable
       isHoverable
       onPress={onClick}
@@ -42,18 +42,21 @@ export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
       </CardHeader>
 
       <CardBody className="justify-end p-0">
-        <div className="flex gap-2 items-center">
-          {word.meaning_kr.split(",").map((word, index) => (
-            <Chip
-              key={index}
-              color="primary"
-              variant="flat"
-              size="md"
-              className="p-0 max-h-6 rounded-md line-clamp-1"
-            >
-              {word}
-            </Chip>
-          ))}
+        <div className="flex flex-wrap gap-2 items-center">
+          {word.meaning_kr
+            .split(",")
+            .slice(0, 2)
+            .map((word, index) => (
+              <Chip
+                key={index}
+                color="primary"
+                variant="flat"
+                size="md"
+                className="p-0 max-h-6 rounded-md line-clamp-1"
+              >
+                {word}
+              </Chip>
+            ))}
         </div>
       </CardBody>
     </Card>
