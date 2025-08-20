@@ -155,7 +155,9 @@ export const WordDetailCard = ({
         <div className="space-y-6 w-full">
           <WordSection
             title="요미가나 같은 단어"
-            words={word.homonyms || []}
+            words={
+              word.homonyms.filter((h) => h.word_jp !== word.word_jp) || []
+            }
             color="warning"
             onWordClick={onSynonymClick}
           />
