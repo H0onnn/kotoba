@@ -161,7 +161,7 @@ export const WordDetailCard = ({
       <CardFooter className="p-0 pt-4">
         <div className="space-y-6 w-full">
           <WordSection
-            title="요미가나 같은 단어"
+            title="요미가나 유사 단어"
             words={
               word.homonyms.filter((h) => h.word_jp !== word.word_jp) || []
             }
@@ -175,7 +175,7 @@ export const WordDetailCard = ({
             onWordClick={onSynonymClick}
           />
           <WordSection
-            title="복합어"
+            title="관련 복합어"
             words={word.compounds || []}
             color="success"
             onWordClick={onSynonymClick}
