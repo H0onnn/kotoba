@@ -1,5 +1,5 @@
 import { title } from "@/components/primitives";
-import { MainClient } from "./_components";
+import { MainForm } from "./_components";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
       </div>
 
       <div className="mt-8 w-full max-w-2xl">
-        <MainClient />
+        <MainForm />
       </div>
     </section>
   );

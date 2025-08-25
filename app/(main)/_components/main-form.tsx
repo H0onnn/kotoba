@@ -5,7 +5,7 @@ import { SearchForm } from "./search-form";
 import { ResultCard } from "./result-card";
 import { Tips } from "./tips";
 
-export const MainClient = () => {
+export const MainForm = () => {
   const {
     word,
     setWord,
