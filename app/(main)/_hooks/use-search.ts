@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ky from "ky";
 import type { Word } from "@/lib/wordbook";
+import { sanitizeAndValidate } from "../_utils/valid";
 
 export const useSearch = () => {
   const [word, setWord] = useState("");
@@ -11,7 +12,12 @@ export const useSearch = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async () => {
-    if (!word.trim()) return;
+    const validation = sanitizeAndValidate(word);
+
+    if (!validation.isValid) {
+      setError(validation.error || "입력값이 유효하지 않습니다.");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -65,6 +71,7 @@ export const useSearch = () => {
     result,
     loading,
     error,
+    setError,
     handleSearch,
     handleSynonymSearch,
   };

@@ -4,14 +4,14 @@ import { SearchIcon } from "@/components/icons";
 import { Form } from "@heroui/form";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { sanitizeAndValidate } from "../_utils/valid";
-import { useState } from "react";
 
 interface SearchFormProps {
   word: string;
   onWordChange: (word: string) => void;
   onSearch: () => void;
   isLoading: boolean;
+  error: string | null;
+  onErrorChange: (error: string | null) => void;
 }
 
 export const SearchForm = ({
@@ -19,23 +19,11 @@ export const SearchForm = ({
   onWordChange,
   onSearch,
   isLoading,
+  error,
+  onErrorChange,
 }: SearchFormProps) => {
-  const [error, setError] = useState<string>("");
-
-  const handleSearch = () => {
-    const validation = sanitizeAndValidate(word);
-
-    if (!validation.isValid) {
-      setError(validation.error || "입력값이 유효하지 않습니다.");
-      return;
-    }
-
-    setError("");
-    onSearch();
-  };
-
   const handleWordChange = (newWord: string) => {
-    setError("");
+    onErrorChange("");
     onWordChange(newWord);
   };
 
@@ -45,7 +33,7 @@ export const SearchForm = ({
         className="flex flex-row items-center space-x-2"
         onSubmit={(e) => {
           e.preventDefault();
-          handleSearch();
+          onSearch();
         }}
       >
         <Input
