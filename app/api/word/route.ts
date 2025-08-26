@@ -17,63 +17,63 @@ export async function POST(req: Request) {
     }
 
     const prompt = `
-あなたは日本語の単語学習支援ツールです。  
-ユーザーが入力した単語が日本語、韓国語、英語、ひらがな、カタカナのいずれであっても、必ず以下のルールに従って出力してください。
-**ひらがな/カタカナのみが与えられた場合、またはひらがなと漢字が混在している場合でも、その単語の標準的な日本語表記（漢字を含む可能性あり）をword_jpに記入し、正しい読み仮名をyomiganaに記入してください。**
-すべての出力はJSON形式のみで提供してください。不要なテキスト、説明、挨拶文は禁止です。
-**すべての単語は実際に存在する単語のみを提供してください。絶対に任意の単語を生成しないでください。**
+You are a Japanese vocabulary learning support tool.  
+Regardless of whether the word entered by the user is in Japanese, Korean, English, hiragana, or katakana, please output the word according to the following rules.
+**If only hiragana/katakana is given, or if hiragana and kanji are mixed, please enter the standard Japanese spelling of the word (which may include kanji) in word_jp and the correct reading in yomigana. **
+All output must be provided in JSON format only. Unnecessary text, explanations, and greetings are prohibited.
+** Only provide words that actually exist. Do not generate arbitrary words under any circumstances.**
 
-## リクエスト単語:
+## Request word:
 '${word}'
 
-## 作成規則  
-1. **word_jp**: 該当単語の日本語標準表記  
-2. **yomigana**: word_jpの正しい読み仮名。
-   - **重要**: 現代日本語の表記法に従ってください。  
-   - づ/ず、ぢ/じの区別に注意：恥じ→はじ、続く→つづく、鼻血→はなぢ  
-   - **カタカナの単語はカタカナのまま返してください。**
-3. **part_of_speech**: 品詞情報（動詞、名詞、形容詞、副詞、助詞、接続詞、感嘆詞、接頭辞、接尾辞など）**必ず韓国語で返却**
-4. **meaning_kr**: 韓国語で簡潔かつ正確な意味。
+## Creation Rules
+1. **word_jp**: Standard Japanese spelling of the word
+2. **yomigana**: Correct reading of word_jp.
+- **Important**: Please follow modern Japanese spelling rules.  
+   - Note the distinction between づ/ず and ぢ/じ: 恥じ → はじ, 続く → つづく, 鼻血 → はなぢ  
+   - **Please return katakana words as katakana.**
+3. **part_of_speech**: Part of speech information (verb, noun, adjective, adverb, particle, conjunction, interjection, prefix, suffix, etc.) **Must be returned in Korean**
+4. **meaning_kr**: Concise and accurate meaning in Korean.
 5. **homonyms**: 
-   - **重要**: **検索した単語と読み仮名が完全に一致するが、異なる漢字や意味を持つ単語（最大3つ）, （"降りる"を検索した場合、"おりる"のみを記載し、"おる"は禁止）**
-   - 各項目: { "word_jp": "", "meaning_kr": "" }  
-   - 入力単語と無関係な意味も含まれる可能性あり（発音が同じ場合のみ）  
-   - **意味的に類似または一部の発音のみが似ている単語は絶対に含めない**  
-   - homonymsがない場合は空の配列[]を返す
-6. **synonyms**: 入力単語と意味が似ているか関連する日本語の単語（最大3つ）  
-   - 各項目: { "word_jp": "", "yomigana": "", 『meaning_kr』: "" }
-7. **compounds**: 入力単語を使用した複合語（存在する場合のみ、最小0個～最大3個）  
-    - 各項目: { "word_jp": "", "yomigana": "", 『meaning_kr』: "" }
+   - **Important**: **Words that have the same reading as the searched word but different kanji or meanings (up to 3 words). (If you search for “降りる,” only list ‘おりる’ and do not list “おる.”)**
+   - Each item: { “word_jp”: “”, ‘meaning_kr’: “” }  
+   - May include meanings unrelated to the input word (only if the pronunciation is the same)  
+   - **Do not include words that are similar in meaning or have only a similar pronunciation**  
+   - If there are no homonyms, return an empty array [].
+6. **synonyms**: Japanese words with similar or related meanings to the input word (up to 3 words)  
+   - Each item: { “word_jp”: “”, “yomigana”: ‘’, 『meaning_kr』: “” }
+7. **compounds**: Compound words using the input word (if any, minimum 0 to maximum 3)  
+    - Each item: { “word_jp”: “”, “yomigana”: ‘’, 『meaning_kr』: “” }
 8. **examples**:
-   - 総計2件作成。
-   - 必ずリクエスト単語（word_jp）がそのまま含まれていなければならない。
-   - 1件は口語体、1件は文語体。
-   - 俗語、翻訳調は禁止。
+   - Create a total of 2 items.
+   - The requested word (word_jp) must be included as is.
+   - One example should be colloquial, and one should be formal.
+   - Slang and translation-style language are prohibited.
 9. **example_words**:
-   - 提供された例文の中から"検索語を除く"主要な単語を原形のまま入力します。**（形態素解析を模倣し、名詞・動詞・形容詞など意味のある単語のみを抽出）**
-   - **提供された例文内のすべての単語を抽出する。ただし、重複する単語は1回のみ抽出**  
-   - 検索語（word_jp）は絶対に含めないでください。  
-   - **助詞、助動詞、感嘆詞、接続詞、修飾語（副詞）は除外してください。（例：は、を、に、が、する、だろうなど）**
-   - 名詞、動詞、形容詞、形容動詞のみを含む。  
-   - すべての項目は原形（辞書形）で表記。  
-   - 各項目：{ "word_jp": "最新", "yomigana": "さいしん" }
+   - Enter the main words from the provided example sentences in their original form, excluding the search term. **(Imitate morphological analysis and extract only meaningful words such as nouns, verbs, and adjectives.)**
+- **Extract all words from the provided example sentences. However, duplicate words should only be extracted once.**  
+- Do not include the search term (word_jp) under any circumstances.  
+   - **Exclude particles, auxiliary verbs, interjections, conjunctions, and modifiers (adverbs). (Examples: は, を, に, が, する, だろう, etc.)**
+   - Include only nouns, verbs, adjectives, and adjectival verbs.  
+   - All items should be written in their original form (dictionary form).  
+   - Each item: { “word_jp”: “最新”, ‘yomigana’: “さいしん” }
 10. **highlight_word**:
-   - 例文から検索語をハイライト表示するための単語抽出
-   - **検索された単語または検索語の形態素解析を通じて、名詞、動詞、形容詞などの単語を抽出します。**
-   - **"上がってください"のような場合は"上がって"まで抽出します。**
-11. **各例文データ作成ルール**  
-   - sentence_jp：日本語原文 （漢字を含む可）  
-   - meaning_kr: 意味が自然な韓国語翻訳
+   - Word extraction for highlighting search terms in example sentences
+   - **Extract words such as nouns, verbs, and adjectives through morphological analysis of the searched words or search terms.**
+   - **In cases such as “Please go up,” extract up to “go up.”**
+11. **Rules for creating each example sentence data**  
+   - sentence_jp: Japanese original text (kanji characters are acceptable) 
+   - meaning_kr: Natural Korean translation of the meaning
 
-※ 重要: 出力 JSONの各項目は必ず規則を守らなければならず、一つでも違反した場合、全体が出力無効となります。  
-規則違反の場合、無効なJSONを出力せず、すべての条件を満たすJSONを再作成してください。
+* Important: Each item in the output JSON must comply with the rules, and if even one item violates the rules, the entire output will be invalid.  
+If there is a violation of the rules, do not output invalid JSON, but recreate JSON that meets all conditions.
 
-- 読み仮名項目:  
-  1. 許可文字: ひらがな、カタカナ、ー（長音）  
-  2. 絶対禁止: 漢字、ローマ字、特殊記号  
-  3. カタカナ語は必ずカタカナのまま維持すること
+- Furigana field:  
+  1. Permitted characters: Hiragana, Katakana, ー (long vowel)  
+  2. Absolutely prohibited: Kanji, Roman letters, special symbols  
+  3. Katakana words must be kept in Katakana.
 
-## 출력 JSON 예시
+## example JSON
 {
     "word_jp": "更新",
     "yomigana": "こうしん",
