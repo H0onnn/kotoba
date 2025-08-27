@@ -9,6 +9,10 @@ export const siteConfig = {
       href: "/",
     },
     {
+      label: "뉴스 요약",
+      href: "/news",
+    },
+    {
       label: "단어장",
       href: "/wordbook",
     },
@@ -17,6 +21,10 @@ export const siteConfig = {
     {
       label: "홈",
       href: "/",
+    },
+    {
+      label: "뉴스 요약",
+      href: "/news",
     },
     {
       label: "단어장",
