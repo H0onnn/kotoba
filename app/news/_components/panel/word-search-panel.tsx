@@ -35,7 +35,7 @@ export const WordSearchPanel = () => {
 
       <CardBody className="overflow-auto flex-1 space-y-4">
         <Form
-          className="space-y-2"
+          className="flex flex-row items-center"
           onSubmit={(e) => {
             e.preventDefault();
             handleSearch();
@@ -54,13 +54,7 @@ export const WordSearchPanel = () => {
             isInvalid={!!validationError}
             errorMessage={validationError}
           />
-          <Button
-            type="submit"
-            color="primary"
-            size="sm"
-            className="w-full"
-            isLoading={loading}
-          >
+          <Button type="submit" color="primary" size="sm" isLoading={loading}>
             {!loading ? "검색" : "검색 중.."}
           </Button>
         </Form>

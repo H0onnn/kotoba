@@ -1,8 +1,11 @@
+"use client";
+
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Chip } from "@heroui/chip";
-import { useWordSearch } from "@/app/news/_contexts";
+import { useWordSearch, useNewsAnalysis } from "@/app/news/_contexts";
 import { type SummarizedContent } from "@/app/news/_types";
+import { Button } from "@heroui/button";
 
 interface SummaryPanelProps {
   result: SummarizedContent;
@@ -13,6 +16,7 @@ const FILTER_WORDS = ["NHK", "NHK NEWS WEB", "ニュース"]; // 불필요한 �
 
 export const SummaryPanel = ({ result, onSectionClick }: SummaryPanelProps) => {
   const { searchKeyword } = useWordSearch();
+  const { clearResult, clearError } = useNewsAnalysis();
 
   const handleKeywordClick = (keyword: string) => {
     searchKeyword(keyword);
@@ -21,15 +25,25 @@ export const SummaryPanel = ({ result, onSectionClick }: SummaryPanelProps) => {
   if (!result) {
     return (
       <div className="flex justify-center items-center p-4 h-full text-gray-500">
-        URL을 파싱하여 요약을 확인하세요
+        요약된 내용이 없어요
       </div>
     );
   }
 
   return (
     <Card className="h-full rounded-none">
-      <CardHeader>
+      <CardHeader className="justify-between">
         <h4 className="text-lg font-semibold">AI 요약</h4>
+
+        <Button
+          size="sm"
+          onClick={() => {
+            clearError();
+            clearResult();
+          }}
+        >
+          다른 기사 보기
+        </Button>
       </CardHeader>
       <CardBody className="overflow-auto flex-1 space-y-4">
         <div>

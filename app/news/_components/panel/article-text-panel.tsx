@@ -28,7 +28,7 @@ export const ArticleTextPanel = ({ content }: ArticleTextPanelProps) => {
   if (!content) {
     return (
       <div className="flex justify-center items-center p-4 h-full text-gray-500">
-        URL을 파싱하여 원문을 확인하세요
+        뉴스 기사를 요약하고 원문을 확인하세요
       </div>
     );
   }
