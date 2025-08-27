@@ -72,6 +72,7 @@ export const WordSearchPanel = () => {
               onToggleSave={handleSaveWord}
               isSaved={isAlreadySaved}
               onSynonymClick={handleSynonymSearch}
+              isAnalysis={true}
             />
           </div>
         )}

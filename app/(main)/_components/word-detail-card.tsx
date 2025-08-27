@@ -64,16 +64,20 @@ interface WordDetailCardProps {
   onToggleSave: () => void;
   isSaved: boolean;
   onSynonymClick: (synonym: string) => void;
+  isAnalysis?: boolean;
 }
 
 export const WordDetailCard = ({
   word,
   onToggleSave,
-  isSaved,
+  isSaved = false,
   onSynonymClick,
+  isAnalysis = false,
 }: WordDetailCardProps) => {
+  const cardClass = isAnalysis ? "!shadow-none !rounded-none !p-0" : "!p-4";
+
   return (
-    <Card className="p-4 w-full">
+    <Card className={`w-full ${cardClass}`}>
       <CardHeader className="flex flex-col gap-2 items-start p-0 pb-4">
         <div className="flex justify-between items-start w-full">
           <div className="flex flex-col gap-2">
