@@ -1,86 +1,29 @@
 "use client";
 
-import { useState } from "react";
-import ky from "ky";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
 import { SearchIcon } from "@/components/icons";
-import { sanitizeAndValidate } from "@/app/(main)/_utils/valid";
 import { WordDetailCard } from "@/app/(main)/_components/word-detail-card";
 import { useWordSave } from "@/app/(main)/_hooks";
-import type { Word } from "@/lib/wordbook";
+import { useWordSearch } from "@/app/news/_contexts";
 
 export const WordSearchPanel = () => {
-  const [word, setWord] = useState("");
-  const [result, setResult] = useState<Word>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [validationError, setValidationError] = useState<string>("");
+  const { word, result, loading, error, validationError, setWord, searchWord } =
+    useWordSearch();
 
   const { handleSaveWord, isAlreadySaved } = useWordSave(result!);
 
   const handleSearch = async () => {
-    if (!word.trim()) return;
-
-    const validation = sanitizeAndValidate(word);
-
-    if (!validation.isValid) {
-      setValidationError(validation.error || "입력값이 유효하지 않습니다.");
-      return;
-    }
-
-    setValidationError("");
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await ky
-        .post("/api/word", {
-          json: {
-            word: word,
-          },
-        })
-        .json<Word>();
-
-      if (!res) {
-        setError("단어 데이터 요청에 실패했습니다.");
-      }
-
-      setResult(res);
-      setWord("");
-    } catch (err) {
-      setError("네트워크 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
+    await searchWord();
   };
 
   const handleSynonymSearch = async (synonym: string) => {
-    setWord(synonym);
-    setLoading(true);
-    setError(null);
-    setValidationError("");
-
-    try {
-      const res = await ky
-        .post("/api/word", {
-          json: { word: synonym },
-        })
-        .json<Word>();
-
-      setResult(res);
-      setWord("");
-    } catch (err) {
-      setError("네트워크 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
+    await searchWord(synonym);
   };
 
   const handleWordChange = (newWord: string) => {
-    setValidationError("");
     setWord(newWord);
   };
 

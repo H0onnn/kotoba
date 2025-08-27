@@ -1,8 +1,7 @@
-// TODO: chip 클릭 시 단어 검색
-
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Chip } from "@heroui/chip";
+import { useWordSearch } from "@/app/news/_contexts";
 import { type SummarizedContent } from "@/app/news/_types";
 
 interface SummaryPanelProps {
@@ -13,6 +12,12 @@ interface SummaryPanelProps {
 const FILTER_WORDS = ["NHK", "NHK NEWS WEB", "ニュース"]; // 불필요한 키워드 단어
 
 export const SummaryPanel = ({ result, onSectionClick }: SummaryPanelProps) => {
+  const { searchKeyword } = useWordSearch();
+
+  const handleKeywordClick = (keyword: string) => {
+    searchKeyword(keyword);
+  };
+
   if (!result) {
     return (
       <div className="flex justify-center items-center p-4 h-full text-gray-500">
@@ -57,6 +62,7 @@ export const SummaryPanel = ({ result, onSectionClick }: SummaryPanelProps) => {
                       size="sm"
                       variant="flat"
                       className="transition-colors duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+                      onClick={() => handleKeywordClick(keyword)}
                     >
                       {keyword}
                     </Chip>

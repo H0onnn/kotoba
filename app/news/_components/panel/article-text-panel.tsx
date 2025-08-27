@@ -2,48 +2,28 @@
 
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Switch } from "@heroui/switch";
-import {
-  useState,
-  useRef,
-  useEffect,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
+import { useState, useEffect } from "react";
+import { usePanelHighlight } from "@/app/news/_contexts";
 import { type SummarizedContent } from "@/app/news/_types";
 
 interface ArticleTextPanelProps {
   content: SummarizedContent | null;
-  highlightedParagraphs?: number[];
 }
 
-export interface ArticleTextPanelRef {
-  scrollToHighlighted: () => void;
-}
-
-export const ArticleTextPanel = forwardRef<
-  ArticleTextPanelRef,
-  ArticleTextPanelProps
->(({ content, highlightedParagraphs = [] }, ref) => {
+export const ArticleTextPanel = ({ content }: ArticleTextPanelProps) => {
   const [isTranslationEnabled, setIsTranslationEnabled] = useState(false);
-  const paragraphRefs = useRef<{ [key: number]: HTMLElement | null }>({});
-  const containerRef = useRef<HTMLDivElement>(null);
+  const {
+    highlightedParagraphs,
+    registerParagraphRef,
+    registerContainerRef,
+    scrollToHighlighted,
+  } = usePanelHighlight();
 
-  useImperativeHandle(ref, () => ({
-    scrollToHighlighted: () => {
-      if (highlightedParagraphs.length > 0) {
-        const firstHighlightedId = highlightedParagraphs[0];
-        const targetElement = paragraphRefs.current[firstHighlightedId];
-
-        if (targetElement && containerRef.current) {
-          targetElement.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-            inline: "nearest",
-          });
-        }
-      }
-    },
-  }));
+  useEffect(() => {
+    if (highlightedParagraphs.length > 0) {
+      scrollToHighlighted();
+    }
+  }, [highlightedParagraphs, scrollToHighlighted]);
 
   if (!content) {
     return (
@@ -75,7 +55,7 @@ export const ArticleTextPanel = forwardRef<
           </h5>
         </div>
 
-        <div ref={containerRef}>
+        <div ref={registerContainerRef}>
           <h4 className="mb-2 text-sm font-medium text-gray-600">원문 내용</h4>
           <div className="max-w-none prose prose-sm">
             {content.structuredText && content.structuredText.length > 0 ? (
@@ -99,9 +79,7 @@ export const ArticleTextPanel = forwardRef<
                     return (
                       <h5
                         key={paragraph.id}
-                        ref={(el) => {
-                          paragraphRefs.current[paragraph.id] = el;
-                        }}
+                        ref={(el) => registerParagraphRef(paragraph.id, el)}
                         className={`text-base font-semibold ${baseClasses} ${highlightClasses}`}
                       >
                         {paragraph.text}
@@ -111,9 +89,7 @@ export const ArticleTextPanel = forwardRef<
                     return (
                       <li
                         key={paragraph.id}
-                        ref={(el) => {
-                          paragraphRefs.current[paragraph.id] = el;
-                        }}
+                        ref={(el) => registerParagraphRef(paragraph.id, el)}
                         className={`ml-4 ${baseClasses} ${highlightClasses}`}
                       >
                         {paragraph.text}
@@ -123,9 +99,7 @@ export const ArticleTextPanel = forwardRef<
                     return (
                       <p
                         key={paragraph.id}
-                        ref={(el) => {
-                          paragraphRefs.current[paragraph.id] = el;
-                        }}
+                        ref={(el) => registerParagraphRef(paragraph.id, el)}
                         className={`${baseClasses} ${highlightClasses}`}
                       >
                         {paragraph.text}
@@ -157,4 +131,4 @@ export const ArticleTextPanel = forwardRef<
       </CardBody>
     </Card>
   );
-});
+};

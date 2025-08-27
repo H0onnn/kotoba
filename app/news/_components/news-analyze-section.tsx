@@ -1,16 +1,26 @@
 "use client";
 
 import { subtitle } from "@/components/primitives";
-import { useNewsAnalyze } from "../_hooks";
+import {
+  NewsAnalysisProvider,
+  PanelHighlightProvider,
+  WordSearchProvider,
+  useNewsAnalysis,
+} from "../_contexts";
 import { URLParserForm } from "./parser-form";
 import { ResultPanel } from "./panel";
 
-export const NewsAnalyzeSection = () => {
-  const { url, setUrl, handleAnalyze, loading, result, error } =
-    useNewsAnalyze();
+const NewsContent = () => {
+  const { url, setUrl, analyzeUrl, loading, result, error } = useNewsAnalysis();
 
   if (result) {
-    return <ResultPanel result={result} />;
+    return (
+      <PanelHighlightProvider>
+        <WordSearchProvider>
+          <ResultPanel result={result} />
+        </WordSearchProvider>
+      </PanelHighlightProvider>
+    );
   }
 
   return (
@@ -26,7 +36,7 @@ export const NewsAnalyzeSection = () => {
           <URLParserForm
             url={url}
             onUrlChange={(url) => setUrl(url)}
-            onAnalyze={handleAnalyze}
+            onAnalyze={analyzeUrl}
             isLoading={loading}
             error={error}
           />
@@ -35,5 +45,13 @@ export const NewsAnalyzeSection = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+export const NewsAnalyzeSection = () => {
+  return (
+    <NewsAnalysisProvider>
+      <NewsContent />
+    </NewsAnalysisProvider>
   );
 };
