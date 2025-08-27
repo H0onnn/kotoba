@@ -28,7 +28,7 @@ export const SearchForm = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       <Form
         className="flex flex-row items-center space-x-2"
         onSubmit={(e) => {

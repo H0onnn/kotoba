@@ -36,7 +36,7 @@ export const URLParserForm = ({
             input: "text-base w-full",
           }}
           size="lg"
-          placeholder="https://www3.nhk.or.jp/news/html/20250827/k10014904091000.html"
+          placeholder="https://www3.nhk.or.jp/news/html/20250827..."
           startContent={
             <SearchIcon className="flex-shrink-0 text-base pointer-events-none text-default-400" />
           }
