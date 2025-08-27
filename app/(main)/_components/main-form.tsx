@@ -14,6 +14,7 @@ export const MainForm = () => {
     loading,
     result,
     error,
+    setError,
   } = useSearch();
 
   return (
@@ -24,12 +25,12 @@ export const MainForm = () => {
         <SearchForm
           word={word}
           onWordChange={(word) => setWord(word)}
-          onSearch={() => handleSearch()}
+          onSearch={handleSearch}
           isLoading={loading}
+          error={error}
+          onErrorChange={(error) => setError(error)}
         />
       </div>
-
-      {error && <div className="p-4 text-center text-red-500">{error}</div>}
 
       {result && (
         <ResultCard word={result} onSynonymClick={handleSynonymSearch} />

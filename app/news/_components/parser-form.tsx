@@ -5,56 +5,48 @@ import { Form } from "@heroui/form";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 
-interface SearchFormProps {
-  word: string;
-  onWordChange: (word: string) => void;
-  onSearch: () => void;
+interface URLParserFormProps {
+  url: string;
+  onUrlChange: (url: string) => void;
+  onAnalyze: () => void;
   isLoading: boolean;
   error: string | null;
-  onErrorChange: (error: string | null) => void;
 }
 
-export const SearchForm = ({
-  word,
-  onWordChange,
-  onSearch,
+export const URLParserForm = ({
+  url,
+  onUrlChange,
+  onAnalyze,
   isLoading,
   error,
-  onErrorChange,
-}: SearchFormProps) => {
-  const handleWordChange = (newWord: string) => {
-    onErrorChange("");
-    onWordChange(newWord);
-  };
-
+}: URLParserFormProps) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       <Form
         className="flex flex-row items-center space-x-2"
         onSubmit={(e) => {
           e.preventDefault();
-          onSearch();
+          onAnalyze();
         }}
       >
         <Input
           aria-label="Search"
           classNames={{
-            inputWrapper: "bg-default-100",
-            input: "text-base",
+            inputWrapper: "bg-default-100 flex-1",
+            input: "text-base w-full",
           }}
           size="lg"
-          placeholder="단어를 검색해보세요..."
+          placeholder="https://www3.nhk.or.jp/news/html/20250827/k10014904091000.html"
           startContent={
             <SearchIcon className="flex-shrink-0 text-base pointer-events-none text-default-400" />
           }
           type="search"
-          value={word}
-          onChange={(e) => handleWordChange(e.target.value)}
+          value={url}
+          onChange={(e) => onUrlChange(e.target.value)}
           isInvalid={!!error}
-          errorMessage={error}
         />
         <Button type="submit" variant="bordered" isLoading={isLoading}>
-          {!isLoading ? "검색" : "검색 중.."}
+          AI 요약
         </Button>
       </Form>
     </div>
