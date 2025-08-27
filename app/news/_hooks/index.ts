@@ -1,1 +1,1 @@
-// No hooks currently exported
+export { useDeeplTranslate } from "./use-deepl-translate";
