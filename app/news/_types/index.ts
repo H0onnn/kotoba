@@ -24,4 +24,7 @@ export interface SummarySection {
 
 export interface SummarizedContent extends ParsedContent {
   summary?: Summary;
+  translatedTitle?: string;
+  translatedStructuredText?: StructuredParagraph[];
+  translatedText?: string;
 }
