@@ -119,15 +119,18 @@ ${content.text}
   }
 }
 
-async function summarizeFromUrl(url: string): Promise<SummarizedContent> {
-  const content = await NhkHTMLParser.parseFromUrl(url);
+async function summarizeFromUrl(
+  url: string,
+  timeout?: number
+): Promise<SummarizedContent> {
+  const content = await NhkHTMLParser.parseFromUrl(url, timeout);
   return summarizeContent(content);
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url, timeout = 10000, summarize = false } = body;
+    const { url, timeout, summarize = false } = body;
 
     if (!url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
@@ -142,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     let result;
     if (summarize) {
-      result = await summarizeFromUrl(url);
+      result = await summarizeFromUrl(url, timeout);
     } else {
       result = await NhkHTMLParser.parseFromUrl(url, timeout);
     }

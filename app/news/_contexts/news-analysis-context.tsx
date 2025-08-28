@@ -9,6 +9,7 @@ interface NewsAnalysisState {
   result: SummarizedContent | null;
   loading: boolean;
   error: string | null;
+  loadingStartTime: number | null;
 }
 
 interface NewsAnalysisActions {
@@ -38,6 +39,7 @@ export const NewsAnalysisProvider = ({
     result: null,
     loading: false,
     error: null,
+    loadingStartTime: null,
   });
 
   const setUrl = useCallback((url: string) => {
@@ -47,7 +49,12 @@ export const NewsAnalysisProvider = ({
   const analyzeUrl = useCallback(async () => {
     if (!state.url.trim()) return;
 
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ 
+      ...prev, 
+      loading: true, 
+      error: null,
+      loadingStartTime: Date.now()
+    }));
 
     try {
       const parsed = await URLParserClient.parseUrlWithSummary(state.url);
@@ -56,6 +63,7 @@ export const NewsAnalysisProvider = ({
         result: parsed,
         url: "",
         loading: false,
+        loadingStartTime: null,
       }));
     } catch (err) {
       setState((prev) => ({
@@ -63,6 +71,7 @@ export const NewsAnalysisProvider = ({
         error:
           err instanceof Error ? err.message : "네트워크 오류가 발생했습니다.",
         loading: false,
+        loadingStartTime: null,
       }));
     }
   }, [state.url]);

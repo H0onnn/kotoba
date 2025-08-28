@@ -15,7 +15,7 @@ import { ResultPanel } from "./panel";
 import { ImportantTips } from "./important-tips";
 
 const NewsContent = () => {
-  const { url, setUrl, analyzeUrl, loading, result, error } = useNewsAnalysis();
+  const { url, setUrl, analyzeUrl, loading, result, error, loadingStartTime } = useNewsAnalysis();
 
   if (result) {
     return (
@@ -31,6 +31,7 @@ const NewsContent = () => {
     <FullPageLoadingOverlay
       isLoading={loading}
       loadingText="AI가 기사를 분석하고 있어요..."
+      loadingStartTime={loadingStartTime}
     >
       <section className="container flex flex-col flex-grow gap-4 justify-center items-center px-6 py-8 mx-auto max-w-7xl md:pt-16 md:py-10">
         <div className="flex space-x-2 itmes-center">

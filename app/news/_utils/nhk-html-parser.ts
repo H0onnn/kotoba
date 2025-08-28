@@ -17,9 +17,12 @@ export interface ParsedContent {
 export class NhkHTMLParser {
   // HTML patterns as constants for better maintainability
   private static readonly PATTERNS = {
-    MAIN_CONTENT: /<section[^>]*class="[^"]*content--detail-main[^"]*"[^>]*>([\s\S]*)/i,
-    CONTENT_BODY: /<section[^>]*class="[^"]*content-body[^"]*"[^>]*>([\s\S]*?)<\/section>/gi,
-    UNWANTED_ELEMENTS: /<(?:script|style|nav|header|footer|aside)[^>]*>[\s\S]*?<\/(?:script|style|nav|header|footer|aside)>/gi,
+    MAIN_CONTENT:
+      /<section[^>]*class="[^"]*content--detail-main[^"]*"[^>]*>([\s\S]*)/i,
+    CONTENT_BODY:
+      /<section[^>]*class="[^"]*content-body[^"]*"[^>]*>([\s\S]*?)<\/section>/gi,
+    UNWANTED_ELEMENTS:
+      /<(?:script|style|nav|header|footer|aside)[^>]*>[\s\S]*?<\/(?:script|style|nav|header|footer|aside)>/gi,
     BLOCK_ELEMENTS: /<\/?(?:p|div|section|article|h[1-6])[^>]*>/gi,
     BR_TAGS: /<br[^>]*\/?>/gi,
     LIST_ELEMENTS: /<\/?(?:ul|ol|li)[^>]*>/gi,
@@ -32,11 +35,12 @@ export class NhkHTMLParser {
     PARAGRAPH_TAGS: /<(?:p|div)[^>]*>(.*?)<\/(?:p|div)>/gi,
     DOUBLE_BR: /<br\s*\/?>\s*<br\s*\/?>/gi,
     METADATA: {
-      DESCRIPTION: /<meta\s+(?:name="description"|property="og:description")\s+content="([^"]+)"/i,
+      DESCRIPTION:
+        /<meta\s+(?:name="description"|property="og:description")\s+content="([^"]+)"/i,
       AUTHOR: /<meta\s+name="author"\s+content="([^"]+)"/i,
       DATE: /<meta\s+(?:name="publish-date"|property="article:published_time")\s+content="([^"]+)"/i,
-      KEYWORDS: /<meta\s+name="keywords"\s+content="([^"]+)"/i
-    }
+      KEYWORDS: /<meta\s+name="keywords"\s+content="([^"]+)"/i,
+    },
   };
 
   private static cleanText(text: string): string {
@@ -69,7 +73,7 @@ export class NhkHTMLParser {
     const contentBodyMatches = mainMatch[1].match(this.PATTERNS.CONTENT_BODY);
     return contentBodyMatches
       ? contentBodyMatches
-          .map(match => match.replace(this.PATTERNS.CONTENT_BODY, "$1"))
+          .map((match) => match.replace(this.PATTERNS.CONTENT_BODY, "$1"))
           .join("\n\n")
       : mainMatch[1];
   }
@@ -165,7 +169,9 @@ export class NhkHTMLParser {
           const listContent = listMatches
             .map((match) => {
               const itemText = this.cleanText(
-                match.replace(/<li[^>]*>|<\/li>/gi, "").replace(this.PATTERNS.HTML_TAGS, " ")
+                match
+                  .replace(/<li[^>]*>|<\/li>/gi, "")
+                  .replace(this.PATTERNS.HTML_TAGS, " ")
               );
               return `• ${itemText.trim()}`;
             })
@@ -281,7 +287,7 @@ export class NhkHTMLParser {
 
   static async parseFromUrl(
     url: string,
-    timeout: number = 10000
+    timeout: number = 30000
   ): Promise<ParsedContent> {
     try {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
