@@ -41,8 +41,8 @@ export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
         </div>
       </CardHeader>
 
-      <CardBody className="justify-end p-0">
-        <div className="flex flex-wrap gap-2 items-center">
+      <CardBody className="overflow-hidden justify-end p-0">
+        <div className="flex overflow-hidden flex-wrap gap-2 items-center">
           {word.meaning_kr
             .split(",")
             .slice(0, 2)
@@ -52,9 +52,9 @@ export const WordCard = ({ word, onDelete, onClick }: WordCardProps) => {
                 color="primary"
                 variant="flat"
                 size="md"
-                className="p-0 max-h-6 rounded-md line-clamp-1"
+                className="p-0 max-w-full max-h-6 rounded-md"
               >
-                {word}
+                <span className="truncate">{word}</span>
               </Chip>
             ))}
         </div>
