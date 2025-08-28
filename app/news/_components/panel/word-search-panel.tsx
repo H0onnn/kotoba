@@ -70,6 +70,7 @@ export const WordSearchPanel = () => {
           {result && (
             <div className="mt-4">
               <WordDetailCard
+                key={result.word_jp}
                 word={result}
                 onToggleSave={handleSaveWord}
                 isSaved={isAlreadySaved}
