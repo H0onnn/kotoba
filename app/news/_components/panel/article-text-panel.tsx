@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { usePanelHighlight } from "@/app/news/_contexts";
 import { type SummarizedContent } from "@/app/news/_types";
 import { useDeeplTranslate } from "@/app/news/_hooks";
-import { LoadingOverlay } from "@/components/loading-overlay";
+import { LoadingOverlay } from "@/components/fallback";
 
 interface ArticleTextPanelProps {
   content: SummarizedContent | null;
