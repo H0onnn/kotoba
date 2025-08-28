@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { subtitle } from "@/components/primitives";
-import { LoadingOverlay } from "@/components/loading-overlay";
+import { FullPageLoadingOverlay } from "@/components/fallback";
 import {
   NewsAnalysisProvider,
   PanelHighlightProvider,
@@ -28,7 +28,7 @@ const NewsContent = () => {
   }
 
   return (
-    <LoadingOverlay
+    <FullPageLoadingOverlay
       isLoading={loading}
       loadingText="AI가 기사를 분석하고 있어요..."
     >
@@ -71,7 +71,7 @@ const NewsContent = () => {
           </div>
         </div>
       </section>
-    </LoadingOverlay>
+    </FullPageLoadingOverlay>
   );
 };
 
