@@ -19,7 +19,7 @@ export const MainForm = () => {
 
   return (
     <div className="flex flex-col gap-8 items-center w-full">
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-4 items-center w-full">
         <Tips />
 
         <SearchForm

@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 import { subtitle } from "@/components/primitives";
+import { LoadingOverlay } from "@/components/loading-overlay";
 import {
   NewsAnalysisProvider,
   PanelHighlightProvider,
@@ -25,29 +28,50 @@ const NewsContent = () => {
   }
 
   return (
-    <section className="container flex flex-col flex-grow gap-4 justify-center items-center px-6 py-8 mx-auto max-w-7xl md:pt-16 md:py-10">
-      <div className="flex justify-center items-center space-x-2">
-        <ImportantTips />
+    <LoadingOverlay
+      isLoading={loading}
+      loadingText="AI가 기사를 분석하고 있어요..."
+    >
+      <section className="container flex flex-col flex-grow gap-4 justify-center items-center px-6 py-8 mx-auto max-w-7xl md:pt-16 md:py-10">
+        <div className="flex space-x-2 itmes-center">
+          <span
+            className={subtitle({
+              className: "text-center",
+            })}
+          >
+            NHK 뉴스 기사를 AI가 쉽게 요약해드려요
+          </span>
 
-        <span className={subtitle()}>
-          NHK 뉴스 기사를 AI가 알기 쉽게 요약해드려요
-        </span>
-      </div>
-
-      <div className="mt-8 w-full max-w-2xl">
-        <div className="flex flex-col gap-8 items-center w-full">
-          <URLParserForm
-            url={url}
-            onUrlChange={(url) => setUrl(url)}
-            onAnalyze={analyzeUrl}
-            isLoading={loading}
-            error={error}
-          />
-
-          {error && <div className="p-4 text-center text-red-500">{error}</div>}
+          <Link
+            href="https://www3.nhk.or.jp/news/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-sm font-medium text-blue-600 underline focus:outline-none"
+          >
+            <ExternalLink className="w-4 h-4" />
+            NHK
+          </Link>
         </div>
-      </div>
-    </section>
+
+        <div className="mt-8 w-full max-w-2xl">
+          <div className="flex flex-col gap-4 items-center w-full">
+            <URLParserForm
+              url={url}
+              onUrlChange={(url) => setUrl(url)}
+              onAnalyze={analyzeUrl}
+              isLoading={loading}
+              error={error}
+            />
+
+            <ImportantTips />
+
+            {error && (
+              <div className="p-4 text-center text-red-500">{error}</div>
+            )}
+          </div>
+        </div>
+      </section>
+    </LoadingOverlay>
   );
 };
 
