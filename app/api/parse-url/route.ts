@@ -2,38 +2,36 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { NhkHTMLParser, type ParsedContent } from "@/app/news/_utils";
 import { SummarizedContent } from "@/app/news/_types";
-import { type Summary } from "@/app/news/_types";
+import { type Summary, SummarySection, StructuredParagraph } from "@/app/news/_types";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-async function summarizeContent(
-  content: ParsedContent
-): Promise<SummarizedContent> {
-  try {
-    const prompt = `
-You are a professional news summary expert.  
-Your task is to extract and write **only the essential news summary** in fluent Korean, not a full translation.  
-The writing style should be clear and natural, like a Korean news article written by a journalist.  
+async function summarizeContentChunks(
+  structuredChunks: StructuredParagraph[][],
+  basicInfo: { title: string; url: string; description?: string }
+): Promise<SummarySection[]> {
+  const chunkPrompts = structuredChunks.map(
+    (chunk, index) => `
+You are a professional news summary expert.
+Summarize this specific chunk of a news article **ONLY in Korean**.  
+The source text may be in Japanese, but you MUST translate and summarize into Korean.  
+Do NOT output Japanese in the summary. If you use Japanese, it is considered invalid.  
+This is chunk ${index + 1} of ${structuredChunks.length}.
 
 Key Instructions:
-- Focus only on the **core message and most relevant details** from the article.  
-- Do not translate or rewrite the full article. Summarize concisely.  
-- Use Markdown formatting for readability (headings, bullet points).  
-- Keep the provided JSON structure exactly as defined.  
-- Ensure each section is short, structured, and easy to read.  
-- Do not add or infer information beyond the article.
-- **CRITICAL: Create sections in the SAME ORDER as they appear in the original text. Do not reorganize by importance or topic - maintain the original flow and sequence of the article.**
+- Create a concise summary for this chunk only
+- Maintain the original paragraph order and IDs
+- Use natural Korean writing style
+- Return JSON format with sections array
 
 ### Output Structure (must be JSON):
 {
-  "title": "Article Title (in natural Korean)",
-  "coreSummary": "Summarize the core content of the article in 1-2 paragraphs",
   "sections": [
     {
       "title": "Section Title",
-      "items": ["Key Point 1", "Key Point 2", "..."],
+      "items": ["Key Point 1", "Key Point 2"],
       "relatedParagraphs": [
         {
           "id": 0,
@@ -44,63 +42,130 @@ Key Instructions:
   ]
 }
 
-Important: 
-1. For each section, include "relatedParagraphs" array with objects containing both paragraph ID and preview text. 
-2. Match the preview text with the structured content provided below to ensure accurate mapping.
-3. **MAINTAIN THE ORIGINAL ORDER**: Process the structured content sequentially from ID 0 to the highest ID, creating sections that follow the natural flow of the article. Do not reorder sections by importance or theme.
+### Chunk Data:
+Title: ${basicInfo.title}
+URL: ${basicInfo.url}
+Description: ${basicInfo.description || "None"}
 
-### Provided Data:
-Title: ${content.title}  
-URL: ${content.url}  
-Description: ${content.metadata.description || "None"}  
+Content to summarize:
+${chunk
+  .map(
+    (p: StructuredParagraph) =>
+      `[ID:${p.id}] ${p.type.toUpperCase()}: "${p.preview}" | ${p.text}`
+  )
+  .join("\n")}
+`
+  );
 
-Structured Content (ORDERED BY APPEARANCE - Process sequentially from ID 0):
-${
-  content.structuredText
-    ? content.structuredText
-        .sort((a, b) => a.id - b.id) // 원문과의 순서 보장
-        .map(
-          (p) =>
-            `[ID:${p.id}] ${p.type.toUpperCase()}: "${p.preview}" | ${p.text}`
-        )
-        .join("\n")
-    : "No structured content available"
+  const chunkPromises = chunkPrompts.map(async (prompt) => {
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [prompt],
+        config: {
+          temperature: 0.0,
+          topP: 0.1,
+          responseMimeType: "application/json",
+        },
+      });
+
+      const result = JSON.parse(response.text || '{"sections": []}');
+      return result.sections || [];
+    } catch (error) {
+      console.error("Chunk summarization error:", error);
+      return [];
+    }
+  });
+
+  const results = await Promise.all(chunkPromises);
+  return results.flat();
 }
 
-**INSTRUCTION: Create summary sections following the exact order of IDs above (0, 1, 2, 3...). Each summary section should reference paragraphs in sequential order, not by importance.**
+async function generateCoreSummary(
+  title: string,
+  allSections: SummarySection[]
+): Promise<string> {
+  const prompt = `
+You are a professional news editor.
+Based on the section summaries below, write a concise core summary of the entire article.  
+The summary MUST be written in natural Korean.
+Output should contain ONLY Korean text.
 
-Main Content Body:  
-${content.text}
+Title: ${title}
+
+Section summaries:
+${allSections
+  .map((section) => `${section.title}: ${section.items?.join(", ") || ""}`)
+  .join("\n")}
+
+Return only the core summary text (no JSON, no formatting).
+**Important: It must be written in Korean.**
 `;
 
+  try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [prompt],
       config: {
-        temperature: 0.0,
-        topP: 0.1,
-        responseMimeType: "application/json",
+        temperature: 0.1,
+        topP: 0.2,
       },
     });
 
-    const summaryText = response.text || "요약을 생성할 수 없습니다.";
+    return response.text || "요약을 생성할 수 없습니다.";
+  } catch (error) {
+    console.error("Core summary error:", error);
+    return "핵심 요약을 생성하는 중 오류가 발생했습니다.";
+  }
+}
 
-    let structuredSummary: Summary;
-    try {
-      const parsed = JSON.parse(summaryText);
-      if (parsed.title && parsed.coreSummary && parsed.sections) {
-        structuredSummary = parsed;
-      } else {
-        throw new Error("Invalid structure");
-      }
-    } catch (error) {
-      console.log("Failed to parse summary as structured JSON, using fallback");
-      structuredSummary = {
-        title: content.title || "제목 없음",
-        coreSummary: summaryText,
-        sections: [],
+async function summarizeContent(
+  content: ParsedContent
+): Promise<SummarizedContent> {
+  try {
+    if (!content.structuredText || content.structuredText.length === 0) {
+      return {
+        ...content,
+        summary: {
+          title: content.title || "제목 없음",
+          coreSummary: "구조화된 텍스트가 없어 요약을 생성할 수 없습니다.",
+          sections: [],
+        },
       };
     }
+
+    const sortedStructuredText = content.structuredText.sort(
+      (a, b) => a.id - b.id
+    );
+
+    // 청크 크기를 동적으로 조정 (너무 작으면 오버헤드, 너무 크면 병렬화 효과 없음)
+    const CHUNK_SIZE = Math.max(3, Math.ceil(sortedStructuredText.length / 4));
+    const chunks = [];
+
+    for (let i = 0; i < sortedStructuredText.length; i += CHUNK_SIZE) {
+      chunks.push(sortedStructuredText.slice(i, i + CHUNK_SIZE));
+    }
+
+    const basicInfo = {
+      title: content.title,
+      url: content.url,
+      description: content.metadata.description,
+    };
+
+    // 청크들을 병렬로 요약 처리
+    const allSections = await summarizeContentChunks(chunks, basicInfo);
+
+    // 섹션들이 완료된 후 핵심 요약 생성
+    const finalCoreSummary = await generateCoreSummary(
+      content.title,
+      allSections
+    );
+
+    const structuredSummary: Summary = {
+      title: content.title || "제목 없음",
+      coreSummary: finalCoreSummary,
+      sections: allSections,
+    };
 
     return {
       ...content,
