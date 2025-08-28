@@ -35,7 +35,11 @@ export const MainForm = () => {
         </div>
 
         {result && (
-          <ResultCard word={result} onSynonymClick={handleSynonymSearch} />
+          <ResultCard
+            key={result.word_jp}
+            word={result}
+            onSynonymClick={handleSynonymSearch}
+          />
         )}
       </div>
     </FullPageLoadingOverlay>
