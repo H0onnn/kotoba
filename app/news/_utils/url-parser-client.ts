@@ -19,7 +19,7 @@ export class URLParserClient {
       const response = await ky
         .post(this.baseUrl, {
           json: { url, timeout, summarize: true },
-          timeout: (timeout || 10000) + 30000,
+          timeout: (timeout || 30000) + 40000,
         })
         .json<ParseUrlResponse>();
 

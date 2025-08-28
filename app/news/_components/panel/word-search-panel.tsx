@@ -8,7 +8,7 @@ import { SearchIcon } from "@/components/icons";
 import { WordDetailCard } from "@/app/(main)/_components/word-detail-card";
 import { useWordSave } from "@/app/(main)/_hooks";
 import { useWordSearch } from "@/app/news/_contexts";
-import { LoadingOverlay } from "@/components/loading-overlay";
+import { LoadingOverlay } from "@/components/fallback";
 
 export const WordSearchPanel = () => {
   const { word, result, loading, error, validationError, setWord, searchWord } =
@@ -70,6 +70,7 @@ export const WordSearchPanel = () => {
           {result && (
             <div className="mt-4">
               <WordDetailCard
+                key={result.word_jp}
                 word={result}
                 onToggleSave={handleSaveWord}
                 isSaved={isAlreadySaved}
