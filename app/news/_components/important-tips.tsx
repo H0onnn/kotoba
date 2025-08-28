@@ -16,7 +16,8 @@ export const ImportantTips = () => {
 
         <div className="space-y-1 text-sm text-green-700 dark:text-green-300">
           <p>• 새로고침, 페이지 이탈 시 요약 데이터가 유실돼요</p>
-          <p>• 기사 내용에 따라 최대 1분까지 시간이 소요될 수 있어요</p>
+          <p>• NHK 뉴스 링크가 아니면 요약, 분석이 제대로 안될 수 있어요</p>
+          <p>• 기사 내용에 따라 1분 이상 시간이 소요될 수 있어요</p>
         </div>
       </CardBody>
     </Card>
