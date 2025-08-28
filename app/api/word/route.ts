@@ -35,14 +35,19 @@ export async function POST(req: Request) {
     3. **part_of_speech**: Part of speech information (verb, noun, adjective, adverb, particle, conjunction, interjection, prefix, suffix, etc.) — written in Korean.
     4. **meaning_kr**: Provide a concise, accurate Korean meaning.  
        - **Must be natural Korean (avoid stiff or dictionary-like expressions).**  
-       - Use expressions that would appear in a real Korean dictionary or newspaper, not translationese.  
+       - Use expressions that would appear in a real Korean dictionary or newspaper, not translationese.
+       - **Use commas (,) to separate multiple meanings, but avoid other punctuation marks (periods, semicolons, etc.).**
+       - Keep it simple and clean without unnecessary special characters.  
     5. **homonyms**: Words with the same reading but different kanji/meanings (up to 3).  
        - Each: { "word_jp": "", "meaning_kr": "" }  
+       - meaning_kr can use commas for multiple meanings, but avoid other punctuation marks.
        - If none, return an empty array [].  
     6. **synonyms**: Similar or related Japanese words (up to 3).  
-       - Each: { "word_jp": "", "yomigana": "", "meaning_kr": "" }  
+       - Each: { "word_jp": "", "yomigana": "", "meaning_kr": "" }
+       - meaning_kr can use commas for multiple meanings, but avoid other punctuation marks.
     7. **compounds**: Compound words using the input word (0–3).  
-       - Each: { "word_jp": "", "yomigana": "", "meaning_kr": "" }  
+       - Each: { "word_jp": "", "yomigana": "", "meaning_kr": "" }
+       - meaning_kr can use commas for multiple meanings, but avoid other punctuation marks.  
     8. **examples**: Two example sentences.  
        - Both must include word_jp as-is.  
        - One should be colloquial, one formal.  
@@ -59,8 +64,9 @@ export async function POST(req: Request) {
          - highlight_word: word_jp itself  
          - example_words: Extracted meaningful words (see below)  
     9. **example_words**:  
-       - Extract all meaningful words (nouns, verbs, adjectives, adjectival verbs) from the examples except the search term.  
-       - No particles, auxiliary verbs, conjunctions, interjections.  
+       - Extract ALL meaningful words from both example sentences except the search term itself.  
+       - Include: nouns, verbs, adjectives, adjectival verbs, adverbs, numerals, and any other content words.
+       - Exclude: particles (は、が、を、に、で、と, etc.), auxiliary verbs, conjunctions, interjections.  
        - Keep duplicates only once.  
        - Each: { "word_jp": "", "yomigana": "" }  
     10. **highlight_word**: The searched word itself, for highlighting.  
