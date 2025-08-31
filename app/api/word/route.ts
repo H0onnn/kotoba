@@ -76,6 +76,96 @@ export async function POST(req: Request) {
        - Always ensure readability and flow over word-for-word accuracy.  
     
     *Important: If any rule is violated, recreate valid JSON. Only output JSON. Nothing else.*
+
+    ## example JSON
+{
+    "word_jp": "更新",
+    "yomigana": "こうしん",
+    "part_of_speech": "명사",
+    "meaning_kr": "갱신, 최신화",
+    "homonyms": [
+        {
+            "word_jp": "行進",
+            "meaning_kr": "행진"
+        },
+        {
+            "word_jp": "功臣",
+            "meaning_kr": "공신"
+        }
+    ],
+    "synonyms": [
+        {
+            "word_jp": "改訂",
+            "yomigana": "かいてい",
+            "meaning_kr": "개정, 수정"
+        },
+        {
+            "word_jp": "刷新",
+            "yomigana": "さっしん",
+            "meaning_kr": "쇄신, 일신"
+        }
+    ],
+    "compounds": [
+        {
+            "word_jp": "更新料",
+            "yomigana": "こうしんりょう",
+            "meaning_kr": "갱신료"
+        },
+        {
+            "word_jp": "更新手続き",
+            "yomigana": "こうしんてつづき",
+            "meaning_kr": "갱신 절차"
+        }
+    ],
+    "examples": [
+        {
+            "sentence_jp": "パスワードを定期的に更新してください。",
+            "meaning_kr": "비밀번호를 정기적으로 갱신해 주세요.",
+            "highlight_word": "更新",
+            "example_words": [
+                {
+                    "word_jp": "パスワード",
+                    "yomigana": "ぱすわーど"
+                },
+                {
+                    "word_jp": "定期的",
+                    "yomigana": "ていきてき"
+                },
+                {
+                    "word_jp": "更新",
+                    "yomigana": "こうしん"
+                },
+                {
+                    "word_jp": "する",
+                    "yomigana": "する"
+                }
+            ]
+        },
+        {
+            "sentence_jp": "最新の情報をウェブサイトで更新した。",
+            "meaning_kr": "최신 정보를 웹사이트에서 업데이트했다.",
+            "highlight_word": "更新",
+            "example_words": [
+                {
+                    "word_jp": "最新",
+                    "yomigana": "さいしん"
+                },
+                {
+                    "word_jp": "情報",
+                    "yomigana": "じょうほう"
+                },
+                {
+                    "word_jp": "ウェブサイト",
+                    "yomigana": "うぇぶさいと"
+                },
+                {
+                    "word_jp": "更新",
+                    "yomigana": "こうしん"
+                }
+            ]
+        }
+    ]
+}
     `;
 
     const response = await ai.models.generateContent({

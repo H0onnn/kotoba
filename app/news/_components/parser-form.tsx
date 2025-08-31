@@ -8,8 +8,8 @@ import { Button } from "@heroui/button";
 interface URLParserFormProps {
   url: string;
   onUrlChange: (url: string) => void;
-  onAnalyze: () => void;
-  isLoading: boolean;
+  onAnalyze: () => Promise<void>;
+  isLoading?: boolean;
   error: string | null;
 }
 
@@ -24,9 +24,9 @@ export const URLParserForm = ({
     <div className="space-y-2 w-full">
       <Form
         className="flex flex-row items-center space-x-2"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          onAnalyze();
+          await onAnalyze();
         }}
       >
         <Input
