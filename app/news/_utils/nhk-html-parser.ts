@@ -322,19 +322,4 @@ export class NhkHTMLParser {
       );
     }
   }
-
-  static parseFromHtml(html: string, url: string = ""): ParsedContent {
-    const title = this.extractTitle(html);
-    const text = this.extractTextContent(html);
-    const structuredText = this.extractStructuredContent(html);
-    const metadata = this.extractMetadata(html);
-
-    return {
-      title,
-      text,
-      structuredText,
-      url,
-      metadata,
-    };
-  }
 }
