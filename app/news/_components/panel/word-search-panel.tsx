@@ -30,7 +30,7 @@ export const WordSearchPanel = () => {
 
   return (
     <LoadingOverlay isLoading={loading} loadingText="검색 중...">
-      <Card className="h-full rounded-none">
+      <Card className="h-full rounded-none dark:bg-black">
         <CardHeader>
           <h3 className="text-lg font-semibold">단어 검색</h3>
         </CardHeader>
