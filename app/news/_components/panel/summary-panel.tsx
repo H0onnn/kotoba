@@ -61,7 +61,7 @@ export const SummaryPanel = () => {
       isLoading={streamingSections.length === 0}
       loadingText="AI가 기사를 요약 중이에요..."
     >
-      <Card className="h-full rounded-none">
+      <Card className="h-full rounded-none dark:bg-black">
         <CardHeader className="justify-between">
           <h4 className="text-lg font-semibold">AI 요약</h4>
 

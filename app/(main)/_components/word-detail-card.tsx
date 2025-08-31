@@ -77,7 +77,7 @@ export const WordDetailCard = ({
   const cardClass = isAnalysis ? "!shadow-none !rounded-none !p-0" : "!p-4";
 
   return (
-    <Card className={`w-full ${cardClass}`}>
+    <Card className={`w-full dark:bg-black ${cardClass}`}>
       <CardHeader className="flex flex-col gap-2 items-start p-0 pb-4">
         <div className="flex justify-between items-start w-full">
           <div className="flex flex-col gap-2">

@@ -61,7 +61,7 @@ export const ArticleTextPanel = () => {
 
   return (
     <LoadingOverlay isLoading={isTranslating} loadingText="번역 중...">
-      <Card className="h-full rounded-none">
+      <Card className="h-full rounded-none dark:bg-black">
         <CardHeader className="flex-row justify-between items-center">
           <div className="flex flex-col flex-1 gap-2">
             <div className="flex justify-between items-center">
