@@ -32,7 +32,7 @@ export async function POST(req: Request) {
        - Must follow modern Japanese spelling rules.  
        - Pay attention to づ/ず and ぢ/じ: 恥じ → はじ, 続く → つづく, 鼻血 → はなぢ  
        - Katakana words must stay in katakana.  
-    3. **part_of_speech**: Part of speech information (verb, noun, adjective, adverb, particle, conjunction, interjection, prefix, suffix, etc.) — written in Korean.
+    3. **part_of_speech**: Part of speech information (verb, noun, adjective, adverb, particle, conjunction, interjection, prefix, suffix, etc.) — **written in Korean**.
     4. **meaning_kr**: Provide a concise, accurate Korean meaning.  
        - **Must be natural Korean (avoid stiff or dictionary-like expressions).**  
        - Use expressions that would appear in a real Korean dictionary or newspaper, not translationese.
