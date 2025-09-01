@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   saveWordToBook,
   isWordSaved,
@@ -12,6 +12,14 @@ export const useWordSave = (word: Word) => {
   const [isAlreadySaved, setIsAlreadySaved] = useState(() =>
     word ? isWordSaved(word.word_jp) : false
   );
+
+  useEffect(() => {
+    if (word) {
+      setIsAlreadySaved(isWordSaved(word.word_jp));
+    } else {
+      setIsAlreadySaved(false);
+    }
+  }, [word?.word_jp]);
 
   const handleSaveWord = () => {
     if (!word) return;
