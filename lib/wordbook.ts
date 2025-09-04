@@ -28,6 +28,7 @@ export function getWordbook(): Word[] {
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
+
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
@@ -64,6 +65,7 @@ export function subscribeWordbook(listener: () => void): () => void {
   }
   ensureStorageListener();
   listeners.add(listener);
+
   return () => {
     listeners.delete(listener);
   };
@@ -87,22 +89,26 @@ export function saveWordToBook(wordData: Omit<Word, 'id' | 'savedAt'>): Word {
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(wordbook));
   notifyWordbookSubscribers();
+
   return word;
 }
 
 export function removeWordFromBook(wordJp: string): void {
   const wordbook = getWordbook();
   const filteredWords = wordbook.filter((word) => word.word_jp !== wordJp);
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredWords));
   notifyWordbookSubscribers();
 }
 
 export function isWordSaved(wordJp: string): boolean {
   const wordbook = getWordbook();
+
   return wordbook.some((word) => word.word_jp === wordJp);
 }
 
 export function getWordById(wordId: string): Word | null {
   const wordbook = getWordbook();
+
   return wordbook.find((word) => word.id === wordId) || null;
 }

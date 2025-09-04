@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --fix"
+    "lint": "eslint --fix",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@google/genai": "^1.13.0",

@@ -1,12 +1,6 @@
-"use client";
+'use client';
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useRef,
-} from "react";
+import { createContext, useContext, useState, useCallback, useRef } from 'react';
 
 interface PanelHighlightState {
   highlightedParagraphs: number[];
@@ -20,21 +14,15 @@ interface PanelHighlightActions {
   registerContainerRef: (element: HTMLDivElement | null) => void;
 }
 
-interface PanelHighlightContextType
-  extends PanelHighlightState,
-    PanelHighlightActions {}
+interface PanelHighlightContextType extends PanelHighlightState, PanelHighlightActions {}
 
-const PanelHighlightContext = createContext<
-  PanelHighlightContextType | undefined
->(undefined);
+const PanelHighlightContext = createContext<PanelHighlightContextType | undefined>(undefined);
 
 interface PanelHighlightProviderProps {
   children: React.ReactNode;
 }
 
-export const PanelHighlightProvider = ({
-  children,
-}: PanelHighlightProviderProps) => {
+export const PanelHighlightProvider = ({ children }: PanelHighlightProviderProps) => {
   const [state, setState] = useState<PanelHighlightState>({
     highlightedParagraphs: [],
   });
@@ -57,20 +45,17 @@ export const PanelHighlightProvider = ({
 
       if (targetElement && containerRef.current) {
         targetElement.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "nearest",
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest',
         });
       }
     }
   }, [state.highlightedParagraphs]);
 
-  const registerParagraphRef = useCallback(
-    (id: number, element: HTMLElement | null) => {
-      paragraphRefs.current[id] = element;
-    },
-    []
-  );
+  const registerParagraphRef = useCallback((id: number, element: HTMLElement | null) => {
+    paragraphRefs.current[id] = element;
+  }, []);
 
   const registerContainerRef = useCallback((element: HTMLDivElement | null) => {
     containerRef.current = element;
@@ -85,19 +70,15 @@ export const PanelHighlightProvider = ({
     registerContainerRef,
   };
 
-  return (
-    <PanelHighlightContext.Provider value={contextValue}>
-      {children}
-    </PanelHighlightContext.Provider>
-  );
+  return <PanelHighlightContext.Provider value={contextValue}>{children}</PanelHighlightContext.Provider>;
 };
 
 export const usePanelHighlight = () => {
   const context = useContext(PanelHighlightContext);
+
   if (context === undefined) {
-    throw new Error(
-      "usePanelHighlight must be used within a PanelHighlightProvider"
-    );
+    throw new Error('usePanelHighlight must be used within a PanelHighlightProvider');
   }
+
   return context;
 };

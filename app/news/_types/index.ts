@@ -1,9 +1,9 @@
-import { type ParsedContent } from "../_utils/nhk-html-parser";
+import { type ParsedContent } from '../_utils/nhk-html-parser';
 
 export interface StructuredParagraph {
   id: number;
   text: string;
-  type: "paragraph" | "heading" | "list-item";
+  type: 'paragraph' | 'heading' | 'list-item';
   preview: string; // 첫 50글자 (매칭 정확도 높이기 위함)
 }
 

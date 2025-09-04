@@ -1,5 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
-import { NextResponse } from "next/server";
+import { GoogleGenAI } from '@google/genai';
+import { NextResponse } from 'next/server';
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -10,10 +10,7 @@ export async function POST(req: Request) {
     const { word } = await req.json();
 
     if (!word || !word.trim()) {
-      return NextResponse.json(
-        { error: "단어를 입력하세요." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '단어를 입력하세요.' }, { status: 400 });
     }
 
     const prompt = `
@@ -169,34 +166,33 @@ export async function POST(req: Request) {
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
+      model: 'gemini-2.5-flash-lite',
       contents: prompt,
       config: {
         temperature: 0.0,
         topP: 0.1,
-        responseMimeType: "application/json",
+        responseMimeType: 'application/json',
       },
     });
 
-    const text = response.text ?? "";
+    const text = response.text ?? '';
     const cleanedText = text
-      .replace(/^```json\n?/, "")
-      .replace(/\n?```$/, "")
+      .replace(/^```json\n?/, '')
+      .replace(/\n?```$/, '')
       .trim();
 
     let parsed;
+
     try {
       parsed = JSON.parse(cleanedText);
     } catch {
-      return NextResponse.json(
-        { error: "AI 응답 파싱 실패", raw: text },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'AI 응답 파싱 실패', raw: text }, { status: 500 });
     }
 
     return NextResponse.json(parsed);
   } catch (error) {
-    console.error("Gemini API 오류:", error);
-    return NextResponse.json({ error: "서버 오류" }, { status: 500 });
+    console.error('Gemini API 오류:', error);
+
+    return NextResponse.json({ error: '서버 오류' }, { status: 500 });
   }
 }

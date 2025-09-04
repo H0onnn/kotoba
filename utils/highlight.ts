@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 /**
  * 텍스트에서 특정 단어를 하이라이트 처리하는 유틸리티 함수들
@@ -14,12 +14,12 @@ import React from "react";
 export function highlightWord(
   text: string,
   highlightWord: string,
-  className: string = "bg-yellow-200 dark:bg-yellow-600"
+  className: string = 'bg-yellow-200 dark:bg-yellow-600',
 ): string {
   if (!highlightWord || !text) return text;
 
   // 정규식을 사용하여 대소문자 구분 없이 단어를 찾음
-  const regex = new RegExp(`(${escapeRegExp(highlightWord)})`, "gi");
+  const regex = new RegExp(`(${escapeRegExp(highlightWord)})`, 'gi');
 
   return text.replace(regex, `<span class="${className}">$1</span>`);
 }
@@ -30,7 +30,7 @@ export function highlightWord(
  * @returns 이스케이프된 문자열
  */
 function escapeRegExp(string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
@@ -43,7 +43,7 @@ function escapeRegExp(string: string): string {
 export function highlightMultipleWords(
   text: string,
   highlightWords: string[],
-  className: string = "bg-yellow-200 dark:bg-yellow-600"
+  className: string = 'bg-yellow-200 dark:bg-yellow-600',
 ): string {
   if (!highlightWords || highlightWords.length === 0) return text;
 
@@ -67,10 +67,10 @@ export function highlightMultipleWords(
 export function sanitizeHtml(htmlString: string): string {
   // 기본적인 XSS 방지를 위한 간단한 필터링
   return htmlString
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "")
-    .replace(/javascript:/gi, "")
-    .replace(/on\w+\s*=/gi, "");
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '');
 }
 
 /**
@@ -81,12 +81,12 @@ export function sanitizeHtml(htmlString: string): string {
  */
 export function findHighlightPositions(
   text: string,
-  highlightWord: string
+  highlightWord: string,
 ): Array<{ start: number; end: number; word: string }> {
   if (!highlightWord || !text) return [];
 
   const positions: Array<{ start: number; end: number; word: string }> = [];
-  const regex = new RegExp(escapeRegExp(highlightWord), "gi");
+  const regex = new RegExp(escapeRegExp(highlightWord), 'gi');
   let match;
 
   while ((match = regex.exec(text)) !== null) {
@@ -110,11 +110,12 @@ export function findHighlightPositions(
 export function createHighlightedElements(
   text: string,
   highlightWord: string,
-  highlightClassName: string = "bg-yellow-200 dark:bg-yellow-600"
+  highlightClassName: string = 'bg-yellow-200 dark:bg-yellow-600',
 ): (string | React.ReactElement)[] {
   if (!highlightWord || !text) return [text];
 
   const positions = findHighlightPositions(text, highlightWord);
+
   if (positions.length === 0) return [text];
 
   const elements: (string | React.ReactElement)[] = [];
@@ -128,11 +129,14 @@ export function createHighlightedElements(
 
     // 하이라이트된 단어
     elements.push(
-      React.createElement("span", {
-        key: index,
-        className: highlightClassName,
-        children: pos.word,
-      })
+      React.createElement(
+        'span',
+        {
+          key: index,
+          className: highlightClassName,
+        },
+        pos.word,
+      ),
     );
 
     lastIndex = pos.end;

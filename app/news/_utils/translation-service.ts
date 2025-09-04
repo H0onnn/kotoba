@@ -1,5 +1,6 @@
-import ky from "ky";
-import { type StructuredParagraph } from "../_types";
+import ky from 'ky';
+
+import { type StructuredParagraph } from '../_types';
 
 interface TranslationResponse {
   translatedTexts: string[];
@@ -10,8 +11,8 @@ class TranslationService {
   private async callTranslationAPI(texts: string[]): Promise<string[]> {
     try {
       const response = await ky
-        .post("/api/translate", {
-          json: { texts, targetLang: "ko" },
+        .post('/api/translate', {
+          json: { texts, targetLang: 'ko' },
           timeout: 30000,
         })
         .json<TranslationResponse>();
@@ -21,17 +22,18 @@ class TranslationService {
       if (error instanceof Error) {
         throw new Error(`번역 실패: ${error.message}`);
       }
-      throw new Error("번역에 실패했습니다.");
+      throw new Error('번역에 실패했습니다.');
     }
   }
 
   async translateText(text: string): Promise<string> {
     try {
       const results = await this.callTranslationAPI([text]);
+
       return results[0];
     } catch (error) {
-      console.error("Translation failed:", error);
-      throw new Error("번역에 실패했습니다.");
+      console.error('Translation failed:', error);
+      throw new Error('번역에 실패했습니다.');
     }
   }
 
@@ -39,14 +41,12 @@ class TranslationService {
     try {
       return await this.callTranslationAPI(texts);
     } catch (error) {
-      console.error("Multiple translation failed:", error);
-      throw new Error("번역에 실패했습니다.");
+      console.error('Multiple translation failed:', error);
+      throw new Error('번역에 실패했습니다.');
     }
   }
 
-  async translateStructuredText(
-    structuredText: StructuredParagraph[]
-  ): Promise<StructuredParagraph[]> {
+  async translateStructuredText(structuredText: StructuredParagraph[]): Promise<StructuredParagraph[]> {
     try {
       const texts = structuredText.map((paragraph) => paragraph.text);
       const translatedTexts = await this.translateMultipleTexts(texts);
@@ -57,7 +57,7 @@ class TranslationService {
         preview: translatedTexts[index].slice(0, 50),
       }));
     } catch (error) {
-      console.error("Structured text translation failed:", error);
+      console.error('Structured text translation failed:', error);
       throw error;
     }
   }

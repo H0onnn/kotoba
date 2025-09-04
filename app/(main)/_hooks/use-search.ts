@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import ky from "ky";
-import type { Word } from "@/lib/wordbook";
-import { sanitizeAndValidate } from "../_utils/valid";
+import type { Word } from '@/lib/wordbook';
+
+import { useState } from 'react';
+import ky from 'ky';
+
+import { sanitizeAndValidate } from '../_utils/valid';
 
 export const useSearch = () => {
-  const [word, setWord] = useState("");
+  const [word, setWord] = useState('');
   const [result, setResult] = useState<Word | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +17,8 @@ export const useSearch = () => {
     const validation = sanitizeAndValidate(word);
 
     if (!validation.isValid) {
-      setError(validation.error || "입력값이 유효하지 않습니다.");
+      setError(validation.error || '입력값이 유효하지 않습니다.');
+
       return;
     }
 
@@ -24,7 +27,7 @@ export const useSearch = () => {
 
     try {
       const res = await ky
-        .post("/api/word", {
+        .post('/api/word', {
           json: {
             word: word,
           },
@@ -32,13 +35,13 @@ export const useSearch = () => {
         .json<Word>();
 
       if (!res) {
-        setError("단어 데이터 요청에 실패했습니다.");
+        setError('단어 데이터 요청에 실패했습니다.');
       }
 
       setResult(res);
-      setWord("");
-    } catch (err) {
-      setError("네트워크 오류가 발생했습니다.");
+      setWord('');
+    } catch {
+      setError('네트워크 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -51,15 +54,15 @@ export const useSearch = () => {
 
     try {
       const res = await ky
-        .post("/api/word", {
+        .post('/api/word', {
           json: { word: synonym },
         })
         .json<Word>();
 
       setResult(res);
-      setWord("");
-    } catch (err) {
-      setError("네트워크 오류가 발생했습니다.");
+      setWord('');
+    } catch {
+      setError('네트워크 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }

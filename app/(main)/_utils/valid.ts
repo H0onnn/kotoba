@@ -6,6 +6,7 @@
 export const isOnlyJamo = (text: string): boolean => {
   // 한글 자음/모음만으로 구성된 문자열 패턴
   const jamoPattern = /^[ㄱ-ㅎㅏ-ㅣ]+$/;
+
   return jamoPattern.test(text);
 };
 
@@ -17,6 +18,7 @@ export const isOnlyJamo = (text: string): boolean => {
 export const containsEnglish = (text: string): boolean => {
   // 영어 문자 패턴 (대소문자)
   const englishPattern = /[a-zA-Z]/;
+
   return englishPattern.test(text);
 };
 
@@ -28,6 +30,7 @@ export const containsEnglish = (text: string): boolean => {
 export const containsInappropriateChars = (text: string): boolean => {
   // 부적절한 문자 패턴 (예: 뷁, 특수문자 등)
   const inappropriatePattern = /[뷁\u0000-\u001F\u007F-\u009F\uFFFD]/;
+
   return inappropriatePattern.test(text);
 };
 
@@ -57,7 +60,7 @@ export const isValidInput = (text: string): boolean => {
  * @returns 정리된 문자열과 유효성 여부
  */
 export const sanitizeAndValidate = (
-  text: string
+  text: string,
 ): {
   sanitized: string;
   isValid: boolean;
@@ -66,14 +69,14 @@ export const sanitizeAndValidate = (
   const trimmed = text.trim();
 
   if (!trimmed) {
-    return { sanitized: "", isValid: false, error: "입력값이 비어있습니다." };
+    return { sanitized: '', isValid: false, error: '입력값이 비어있습니다.' };
   }
 
   if (isOnlyJamo(trimmed)) {
     return {
       sanitized: trimmed,
       isValid: false,
-      error: "자음과 모음만으로는 검색할 수 없습니다.",
+      error: '자음과 모음만으로는 검색할 수 없습니다.',
     };
   }
 
@@ -81,7 +84,7 @@ export const sanitizeAndValidate = (
     return {
       sanitized: trimmed,
       isValid: false,
-      error: "영어는 입력할 수 없습니다.",
+      error: '영어는 입력할 수 없습니다.',
     };
   }
 
@@ -89,7 +92,7 @@ export const sanitizeAndValidate = (
     return {
       sanitized: trimmed,
       isValid: false,
-      error: "부적절한 문자가 포함되어 있습니다.",
+      error: '부적절한 문자가 포함되어 있습니다.',
     };
   }
 

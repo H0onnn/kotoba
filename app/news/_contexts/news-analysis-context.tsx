@@ -1,12 +1,9 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState, useCallback } from "react";
-import { URLParserClient } from "../_utils";
-import {
-  type SummarizedContent,
-  SummarySection,
-  StructuredParagraph,
-} from "../_types";
+import { createContext, useContext, useState, useCallback } from 'react';
+
+import { URLParserClient } from '../_utils';
+import { type SummarizedContent, SummarySection, StructuredParagraph } from '../_types';
 
 interface CommonState {
   url: string;
@@ -42,33 +39,25 @@ interface NewsAnalysisActions {
   clearSummaryError: () => void;
 }
 
-interface NewsAnalysisContextType
-  extends CommonState,
-    UrlParseState,
-    SummaryState,
-    NewsAnalysisActions {}
+interface NewsAnalysisContextType extends CommonState, UrlParseState, SummaryState, NewsAnalysisActions {}
 
-const NewsAnalysisContext = createContext<NewsAnalysisContextType | undefined>(
-  undefined
-);
+const NewsAnalysisContext = createContext<NewsAnalysisContextType | undefined>(undefined);
 
 interface NewsAnalysisProviderProps {
   children: React.ReactNode;
 }
 
-export const NewsAnalysisProvider = ({
-  children,
-}: NewsAnalysisProviderProps) => {
+export const NewsAnalysisProvider = ({ children }: NewsAnalysisProviderProps) => {
   const [commonState, setCommonState] = useState<CommonState>({
-    url: "",
+    url: '',
     error: null,
   });
 
   const [parseState, setParseState] = useState<UrlParseState>({
     isParsing: false,
     parsingProgress: 0,
-    parsingMessage: "",
-    streamingTitle: "",
+    parsingMessage: '',
+    streamingTitle: '',
     streamingMetadata: null,
     streamingParagraphs: [],
     parseError: null,
@@ -78,7 +67,7 @@ export const NewsAnalysisProvider = ({
     result: null,
     isStreaming: false,
     streamingSections: [],
-    streamingCoreSummary: "",
+    streamingCoreSummary: '',
     summaryError: null,
   });
 
@@ -94,51 +83,51 @@ export const NewsAnalysisProvider = ({
       isParsing: true,
       parseError: null,
       parsingProgress: 0,
-      parsingMessage: "파싱 시작...",
-      streamingTitle: "",
+      parsingMessage: '파싱 시작...',
+      streamingTitle: '',
       streamingMetadata: null,
       streamingParagraphs: [],
     }));
 
     try {
-      for await (const chunk of URLParserClient.parseUrlStream(
-        commonState.url
-      )) {
-        if (chunk.type === "error") {
+      for await (const chunk of URLParserClient.parseUrlStream(commonState.url)) {
+        if (chunk.type === 'error') {
           setParseState((prev) => ({
             ...prev,
-            parseError: chunk.error || "알 수 없는 오류가 발생했습니다.",
+            parseError: chunk.error || '알 수 없는 오류가 발생했습니다.',
             isParsing: false,
           }));
+
           return;
         }
 
-        if (chunk.type === "html") {
+        if (chunk.type === 'html') {
           setParseState((prev) => ({
             ...prev,
-            parsingMessage: chunk.data?.message || "파싱 중...",
+            parsingMessage: chunk.data?.message || '파싱 중...',
             parsingProgress: chunk.progress || prev.parsingProgress,
           }));
-        } else if (chunk.type === "metadata") {
+        } else if (chunk.type === 'metadata') {
           setParseState((prev) => ({
             ...prev,
-            streamingTitle: chunk.data?.title || "",
+            streamingTitle: chunk.data?.title || '',
             streamingMetadata: chunk.data?.metadata || null,
             parsingProgress: chunk.progress || prev.parsingProgress,
           }));
-        } else if (chunk.type === "paragraphs") {
+        } else if (chunk.type === 'paragraphs') {
           setParseState((prev) => ({
             ...prev,
             streamingParagraphs: [...prev.streamingParagraphs, ...chunk.data],
             parsingProgress: chunk.progress || prev.parsingProgress,
           }));
-        } else if (chunk.type === "complete") {
+        } else if (chunk.type === 'complete') {
           setParseState((prev) => ({
             ...prev,
             isParsing: false,
             parsingProgress: 100,
-            parsingMessage: "파싱 완료",
+            parsingMessage: '파싱 완료',
           }));
+
           return;
         }
       }
@@ -148,13 +137,12 @@ export const NewsAnalysisProvider = ({
         ...prev,
         isParsing: false,
         parsingProgress: 100,
-        parsingMessage: "파싱 완료",
+        parsingMessage: '파싱 완료',
       }));
     } catch (err) {
       setParseState((prev) => ({
         ...prev,
-        parseError:
-          err instanceof Error ? err.message : "네트워크 오류가 발생했습니다.",
+        parseError: err instanceof Error ? err.message : '네트워크 오류가 발생했습니다.',
         isParsing: false,
       }));
     }
@@ -168,46 +156,44 @@ export const NewsAnalysisProvider = ({
       isStreaming: true,
       summaryError: null,
       streamingSections: [],
-      streamingCoreSummary: "",
+      streamingCoreSummary: '',
     }));
 
     try {
-      for await (const chunk of URLParserClient.parseUrlWithSummaryStream(
-        commonState.url
-      )) {
-        if (chunk.type === "error") {
+      for await (const chunk of URLParserClient.parseUrlWithSummaryStream(commonState.url)) {
+        if (chunk.type === 'error') {
           setSummaryState((prev) => ({
             ...prev,
-            summaryError: chunk.error || "알 수 없는 오류가 발생했습니다.",
+            summaryError: chunk.error || '알 수 없는 오류가 발생했습니다.',
             isStreaming: false,
           }));
+
           return;
         }
 
-        if (chunk.type === "sections") {
+        if (chunk.type === 'sections') {
           setSummaryState((prev) => ({
             ...prev,
             streamingSections: [...prev.streamingSections, ...chunk.data],
           }));
-        } else if (chunk.type === "coreSummary") {
+        } else if (chunk.type === 'coreSummary') {
           setSummaryState((prev) => ({
             ...prev,
             streamingCoreSummary: prev.streamingCoreSummary + chunk.data,
           }));
-        } else if (chunk.type === "complete") {
+        } else if (chunk.type === 'complete') {
           setSummaryState((prev) => ({
             ...prev,
             result: chunk.data,
             isStreaming: false,
           }));
-          setCommonState((prev) => ({ ...prev, url: "" }));
+          setCommonState((prev) => ({ ...prev, url: '' }));
         }
       }
     } catch (err) {
       setSummaryState((prev) => ({
         ...prev,
-        summaryError:
-          err instanceof Error ? err.message : "네트워크 오류가 발생했습니다.",
+        summaryError: err instanceof Error ? err.message : '네트워크 오류가 발생했습니다.',
         isStreaming: false,
       }));
     }
@@ -227,15 +213,15 @@ export const NewsAnalysisProvider = ({
       result: null,
       isStreaming: false,
       streamingSections: [],
-      streamingCoreSummary: "",
+      streamingCoreSummary: '',
       summaryError: null,
     });
 
     setParseState({
       isParsing: false,
       parsingProgress: 0,
-      parsingMessage: "",
-      streamingTitle: "",
+      parsingMessage: '',
+      streamingTitle: '',
       streamingMetadata: null,
       streamingParagraphs: [],
       parseError: null,
@@ -268,19 +254,15 @@ export const NewsAnalysisProvider = ({
     clearSummaryError,
   };
 
-  return (
-    <NewsAnalysisContext.Provider value={contextValue}>
-      {children}
-    </NewsAnalysisContext.Provider>
-  );
+  return <NewsAnalysisContext.Provider value={contextValue}>{children}</NewsAnalysisContext.Provider>;
 };
 
 export const useNewsAnalysis = () => {
   const context = useContext(NewsAnalysisContext);
+
   if (context === undefined) {
-    throw new Error(
-      "useNewsAnalysis must be used within a NewsAnalysisProvider"
-    );
+    throw new Error('useNewsAnalysis must be used within a NewsAnalysisProvider');
   }
+
   return context;
 };

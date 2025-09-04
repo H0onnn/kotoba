@@ -1,1 +1,1 @@
-export { useDeeplTranslate } from "./use-deepl-translate";
+export { useDeeplTranslate } from './use-deepl-translate';

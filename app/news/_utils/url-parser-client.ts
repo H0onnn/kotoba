@@ -1,28 +1,25 @@
 interface StreamChunk {
-  type: "sections" | "coreSummary" | "complete" | "error";
+  type: 'sections' | 'coreSummary' | 'complete' | 'error';
   data?: any;
   error?: string;
 }
 
 interface ParseStreamChunk {
-  type: "html" | "metadata" | "paragraphs" | "complete" | "error";
+  type: 'html' | 'metadata' | 'paragraphs' | 'complete' | 'error';
   data?: any;
   progress?: number;
   error?: string;
 }
 
 export class URLParserClient {
-  private static baseUrl = "/api/parse-url";
+  private static baseUrl = '/api/parse-url';
 
-  static async *parseUrlWithSummaryStream(
-    url: string,
-    timeout?: number
-  ): AsyncGenerator<StreamChunk, void, unknown> {
+  static async *parseUrlWithSummaryStream(url: string, timeout?: number): AsyncGenerator<StreamChunk, void, unknown> {
     try {
       const response = await fetch(this.baseUrl, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ url, timeout, summarize: true }),
       });
@@ -32,29 +29,32 @@ export class URLParserClient {
       }
 
       if (!response.body) {
-        throw new Error("Response body is null");
+        throw new Error('Response body is null');
       }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let buffer = "";
+      let buffer = '';
 
       try {
         while (true) {
           const { done, value } = await reader.read();
+
           if (done) break;
 
           buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n\n");
-          buffer = lines.pop() || "";
+          const lines = buffer.split('\n\n');
+
+          buffer = lines.pop() || '';
 
           for (const line of lines) {
-            if (line.startsWith("data: ")) {
+            if (line.startsWith('data: ')) {
               try {
                 const data = JSON.parse(line.slice(6)) as StreamChunk;
+
                 yield data;
               } catch (parseError) {
-                console.error("Failed to parse stream chunk:", parseError);
+                console.error('Failed to parse stream chunk:', parseError);
               }
             }
           }
@@ -65,27 +65,24 @@ export class URLParserClient {
     } catch (error) {
       if (error instanceof Error) {
         yield {
-          type: "error",
+          type: 'error',
           error: `URL 파싱 및 요약 실패: ${error.message}`,
         };
       } else {
         yield {
-          type: "error",
-          error: "URL 파싱 및 요약 중 알 수 없는 오류가 발생했습니다.",
+          type: 'error',
+          error: 'URL 파싱 및 요약 중 알 수 없는 오류가 발생했습니다.',
         };
       }
     }
   }
 
-  static async *parseUrlStream(
-    url: string,
-    timeout?: number
-  ): AsyncGenerator<ParseStreamChunk, void, unknown> {
+  static async *parseUrlStream(url: string, timeout?: number): AsyncGenerator<ParseStreamChunk, void, unknown> {
     try {
       const response = await fetch(this.baseUrl, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ url, timeout, summarize: false }),
       });
@@ -95,29 +92,32 @@ export class URLParserClient {
       }
 
       if (!response.body) {
-        throw new Error("Response body is null");
+        throw new Error('Response body is null');
       }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let buffer = "";
+      let buffer = '';
 
       try {
         while (true) {
           const { done, value } = await reader.read();
+
           if (done) break;
 
           buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n\n");
-          buffer = lines.pop() || "";
+          const lines = buffer.split('\n\n');
+
+          buffer = lines.pop() || '';
 
           for (const line of lines) {
-            if (line.startsWith("data: ")) {
+            if (line.startsWith('data: ')) {
               try {
                 const data = JSON.parse(line.slice(6)) as ParseStreamChunk;
+
                 yield data;
               } catch (parseError) {
-                console.error("Failed to parse stream chunk:", parseError);
+                console.error('Failed to parse stream chunk:', parseError);
               }
             }
           }
@@ -128,13 +128,13 @@ export class URLParserClient {
     } catch (error) {
       if (error instanceof Error) {
         yield {
-          type: "error",
+          type: 'error',
           error: `URL 파싱 실패: ${error.message}`,
         };
       } else {
         yield {
-          type: "error",
-          error: "URL 파싱 중 알 수 없는 오류가 발생했습니다.",
+          type: 'error',
+          error: 'URL 파싱 중 알 수 없는 오류가 발생했습니다.',
         };
       }
     }

@@ -1,1 +1,1 @@
-export { ResultPanel } from "./result-panel";
+export { ResultPanel } from './result-panel';

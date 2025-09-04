@@ -1,16 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useRef, ReactNode } from "react";
+import { useState, useRef, ReactNode } from 'react';
 
 interface ResizablePanelsProps {
   children: [ReactNode, ReactNode, ReactNode];
   className?: string;
 }
 
-export const ResizablePanels = ({
-  children,
-  className = "",
-}: ResizablePanelsProps) => {
+export const ResizablePanels = ({ children, className = '' }: ResizablePanelsProps) => {
   const [panelWidths, setPanelWidths] = useState([30, 40, 30]);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -25,10 +22,10 @@ export const ResizablePanels = ({
     dragPanelIndex.current = panelIndex;
     initialWidths.current = [...panelWidths];
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -45,14 +42,8 @@ export const ResizablePanels = ({
     const minWidth = 10;
     const maxWidth = 80;
 
-    let newCurrentWidth = Math.max(
-      minWidth,
-      Math.min(maxWidth, newWidths[currentIndex] + deltaPercentage)
-    );
-    let newNextWidth = Math.max(
-      minWidth,
-      Math.min(maxWidth, newWidths[nextIndex] - deltaPercentage)
-    );
+    let newCurrentWidth = Math.max(minWidth, Math.min(maxWidth, newWidths[currentIndex] + deltaPercentage));
+    let newNextWidth = Math.max(minWidth, Math.min(maxWidth, newWidths[nextIndex] - deltaPercentage));
 
     if (newCurrentWidth < minWidth) {
       newNextWidth += minWidth - newCurrentWidth;
@@ -74,21 +65,22 @@ export const ResizablePanels = ({
 
   const handleMouseUp = () => {
     isDragging.current = false;
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
-    document.body.style.cursor = "";
-    document.body.style.userSelect = "";
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
   };
 
   const handleTouchStart = (e: React.TouchEvent, panelIndex: number) => {
     const touch = e.touches[0];
+
     isDragging.current = true;
     dragStartX.current = touch.clientX;
     dragPanelIndex.current = panelIndex;
     initialWidths.current = [...panelWidths];
 
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleTouchEnd);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
   };
 
   const handleTouchMove = (e: TouchEvent) => {
@@ -107,14 +99,8 @@ export const ResizablePanels = ({
     const minWidth = 10;
     const maxWidth = 80;
 
-    let newCurrentWidth = Math.max(
-      minWidth,
-      Math.min(maxWidth, newWidths[currentIndex] + deltaPercentage)
-    );
-    let newNextWidth = Math.max(
-      minWidth,
-      Math.min(maxWidth, newWidths[nextIndex] - deltaPercentage)
-    );
+    let newCurrentWidth = Math.max(minWidth, Math.min(maxWidth, newWidths[currentIndex] + deltaPercentage));
+    let newNextWidth = Math.max(minWidth, Math.min(maxWidth, newWidths[nextIndex] - deltaPercentage));
 
     if (newCurrentWidth < minWidth) {
       newNextWidth += minWidth - newCurrentWidth;
@@ -136,42 +122,45 @@ export const ResizablePanels = ({
 
   const handleTouchEnd = () => {
     isDragging.current = false;
-    document.removeEventListener("touchmove", handleTouchMove);
-    document.removeEventListener("touchend", handleTouchEnd);
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
   };
 
   return (
     <div ref={containerRef} className={`flex h-full ${className}`}>
-      <div
-        className="overflow-auto flex-none border-r border-gray-200"
-        style={{ width: `${panelWidths[0]}%` }}
-      >
+      <div className='overflow-auto flex-none border-r border-gray-200' style={{ width: `${panelWidths[0]}%` }}>
         {children[0]}
       </div>
 
-      <div
-        className="flex-shrink-0 w-px bg-gray-100 transition-colors hover:bg-gray-400 cursor-col-resize"
+      <button
+        className='flex-shrink-0 w-px bg-gray-100 transition-colors hover:bg-gray-400 cursor-col-resize border-0 p-0'
+        type='button'
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+          }
+        }}
         onMouseDown={(e) => handleMouseDown(e, 0)}
         onTouchStart={(e) => handleTouchStart(e, 0)}
       />
 
-      <div
-        className="overflow-auto flex-none border-r border-gray-200"
-        style={{ width: `${panelWidths[1]}%` }}
-      >
+      <div className='overflow-auto flex-none border-r border-gray-200' style={{ width: `${panelWidths[1]}%` }}>
         {children[1]}
       </div>
 
-      <div
-        className="flex-shrink-0 w-px bg-gray-100 transition-colors hover:bg-gray-400 cursor-col-resize"
+      <button
+        className='flex-shrink-0 w-px bg-gray-100 transition-colors hover:bg-gray-400 cursor-col-resize border-0 p-0'
+        type='button'
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+          }
+        }}
         onMouseDown={(e) => handleMouseDown(e, 1)}
         onTouchStart={(e) => handleTouchStart(e, 1)}
       />
 
-      <div
-        className="overflow-auto flex-none"
-        style={{ width: `${panelWidths[2]}%` }}
-      >
+      <div className='overflow-auto flex-none' style={{ width: `${panelWidths[2]}%` }}>
         {children[2]}
       </div>
     </div>

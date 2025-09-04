@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import { WordDetailCard } from "./word-detail-card";
-import { useWordSave } from "../_hooks";
-import type { Word } from "@/lib/wordbook";
+import type { Word } from '@/lib/wordbook';
+
+import { useWordSave } from '../_hooks';
+
+import { WordDetailCard } from './word-detail-card';
 
 interface ResultCardProps {
   word: Word;
@@ -14,10 +16,10 @@ export const ResultCard = ({ word, onSynonymClick }: ResultCardProps) => {
 
   return (
     <WordDetailCard
-      word={word}
-      onToggleSave={handleSaveWord}
       isSaved={isAlreadySaved}
+      word={word}
       onSynonymClick={onSynonymClick}
+      onToggleSave={handleSaveWord}
     />
   );
 };

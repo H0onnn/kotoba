@@ -1,9 +1,11 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState, useCallback } from "react";
-import ky from "ky";
-import { sanitizeAndValidate } from "@/app/(main)/_utils/valid";
-import type { Word } from "@/lib/wordbook";
+import type { Word } from '@/lib/wordbook';
+
+import { createContext, useContext, useState, useCallback } from 'react';
+import ky from 'ky';
+
+import { sanitizeAndValidate } from '@/app/(main)/_utils/valid';
 
 interface WordSearchState {
   word: string;
@@ -23,9 +25,7 @@ interface WordSearchActions {
 
 interface WordSearchContextType extends WordSearchState, WordSearchActions {}
 
-const WordSearchContext = createContext<WordSearchContextType | undefined>(
-  undefined
-);
+const WordSearchContext = createContext<WordSearchContextType | undefined>(undefined);
 
 interface WordSearchProviderProps {
   children: React.ReactNode;
@@ -33,20 +33,21 @@ interface WordSearchProviderProps {
 
 export const WordSearchProvider = ({ children }: WordSearchProviderProps) => {
   const [state, setState] = useState<WordSearchState>({
-    word: "",
+    word: '',
     result: undefined,
     loading: false,
     error: null,
-    validationError: "",
+    validationError: '',
   });
 
   const setWord = useCallback((word: string) => {
-    setState((prev) => ({ ...prev, word, validationError: "" }));
+    setState((prev) => ({ ...prev, word, validationError: '' }));
   }, []);
 
   const searchWord = useCallback(
     async (wordToSearch?: string) => {
       const searchTerm = wordToSearch || state.word;
+
       if (!searchTerm.trim()) return;
 
       const validation = sanitizeAndValidate(searchTerm);
@@ -54,21 +55,22 @@ export const WordSearchProvider = ({ children }: WordSearchProviderProps) => {
       if (!validation.isValid) {
         setState((prev) => ({
           ...prev,
-          validationError: validation.error || "입력값이 유효하지 않습니다.",
+          validationError: validation.error || '입력값이 유효하지 않습니다.',
         }));
+
         return;
       }
 
       setState((prev) => ({
         ...prev,
-        validationError: "",
+        validationError: '',
         loading: true,
         error: null,
       }));
 
       try {
         const res = await ky
-          .post("/api/word", {
+          .post('/api/word', {
             json: { word: searchTerm },
           })
           .json<Word>();
@@ -76,27 +78,28 @@ export const WordSearchProvider = ({ children }: WordSearchProviderProps) => {
         if (!res) {
           setState((prev) => ({
             ...prev,
-            error: "단어 데이터 요청에 실패했습니다.",
+            error: '단어 데이터 요청에 실패했습니다.',
             loading: false,
           }));
+
           return;
         }
 
         setState((prev) => ({
           ...prev,
           result: res,
-          word: "",
+          word: '',
           loading: false,
         }));
-      } catch (err) {
+      } catch {
         setState((prev) => ({
           ...prev,
-          error: "네트워크 오류가 발생했습니다.",
+          error: '네트워크 오류가 발생했습니다.',
           loading: false,
         }));
       }
     },
-    [state.word]
+    [state.word],
   );
 
   const searchKeyword = useCallback(async (keyword: string) => {
@@ -105,12 +108,12 @@ export const WordSearchProvider = ({ children }: WordSearchProviderProps) => {
       word: keyword,
       loading: true,
       error: null,
-      validationError: "",
+      validationError: '',
     }));
 
     try {
       const res = await ky
-        .post("/api/word", {
+        .post('/api/word', {
           json: { word: keyword },
         })
         .json<Word>();
@@ -118,13 +121,13 @@ export const WordSearchProvider = ({ children }: WordSearchProviderProps) => {
       setState((prev) => ({
         ...prev,
         result: res,
-        word: "",
+        word: '',
         loading: false,
       }));
-    } catch (err) {
+    } catch {
       setState((prev) => ({
         ...prev,
-        error: "네트워크 오류가 발생했습니다.",
+        error: '네트워크 오류가 발생했습니다.',
         loading: false,
       }));
     }
@@ -135,7 +138,7 @@ export const WordSearchProvider = ({ children }: WordSearchProviderProps) => {
   }, []);
 
   const clearError = useCallback(() => {
-    setState((prev) => ({ ...prev, error: null, validationError: "" }));
+    setState((prev) => ({ ...prev, error: null, validationError: '' }));
   }, []);
 
   const contextValue: WordSearchContextType = {
@@ -147,17 +150,15 @@ export const WordSearchProvider = ({ children }: WordSearchProviderProps) => {
     clearError,
   };
 
-  return (
-    <WordSearchContext.Provider value={contextValue}>
-      {children}
-    </WordSearchContext.Provider>
-  );
+  return <WordSearchContext.Provider value={contextValue}>{children}</WordSearchContext.Provider>;
 };
 
 export const useWordSearch = () => {
   const context = useContext(WordSearchContext);
+
   if (context === undefined) {
-    throw new Error("useWordSearch must be used within a WordSearchProvider");
+    throw new Error('useWordSearch must be used within a WordSearchProvider');
   }
+
   return context;
 };

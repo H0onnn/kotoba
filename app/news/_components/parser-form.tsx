@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { SearchIcon } from "@/components/icons";
-import { Form } from "@heroui/form";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
+import { Form } from '@heroui/form';
+import { Input } from '@heroui/input';
+import { Button } from '@heroui/button';
+
+import { SearchIcon } from '@/components/icons';
 
 interface URLParserFormProps {
   url: string;
@@ -13,39 +14,31 @@ interface URLParserFormProps {
   error: string | null;
 }
 
-export const URLParserForm = ({
-  url,
-  onUrlChange,
-  onAnalyze,
-  isLoading,
-  error,
-}: URLParserFormProps) => {
+export const URLParserForm = ({ url, onUrlChange, onAnalyze, isLoading, error }: URLParserFormProps) => {
   return (
-    <div className="space-y-2 w-full">
+    <div className='space-y-2 w-full'>
       <Form
-        className="flex flex-row items-center space-x-2"
+        className='flex flex-row items-center space-x-2'
         onSubmit={async (e) => {
           e.preventDefault();
           await onAnalyze();
         }}
       >
         <Input
-          aria-label="Search"
+          aria-label='Search'
           classNames={{
-            inputWrapper: "bg-default-100 flex-1",
-            input: "text-base w-full",
+            inputWrapper: 'bg-default-100 flex-1',
+            input: 'text-base w-full',
           }}
-          size="lg"
-          placeholder="https://www3.nhk.or.jp/news/html/20250827..."
-          startContent={
-            <SearchIcon className="flex-shrink-0 text-base pointer-events-none text-default-400" />
-          }
-          type="search"
+          isInvalid={!!error}
+          placeholder='https://www3.nhk.or.jp/news/html/20250827...'
+          size='lg'
+          startContent={<SearchIcon className='flex-shrink-0 text-base pointer-events-none text-default-400' />}
+          type='search'
           value={url}
           onChange={(e) => onUrlChange(e.target.value)}
-          isInvalid={!!error}
         />
-        <Button type="submit" variant="bordered" isLoading={isLoading}>
+        <Button isLoading={isLoading} type='submit' variant='bordered'>
           AI 요약
         </Button>
       </Form>

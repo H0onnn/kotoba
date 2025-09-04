@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
-import { NhkHTMLParser, type ParsedContent } from "@/app/news/_utils";
-import { SummarySection, StructuredParagraph } from "@/app/news/_types";
+import { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenAI } from '@google/genai';
+
+import { NhkHTMLParser, type ParsedContent } from '@/app/news/_utils';
+import { SummarySection, StructuredParagraph } from '@/app/news/_types';
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -9,7 +10,7 @@ const ai = new GoogleGenAI({
 
 async function* summarizeContentChunksStream(
   structuredChunks: StructuredParagraph[][],
-  basicInfo: { title: string; url: string; description?: string }
+  basicInfo: { title: string; url: string; description?: string },
 ): AsyncGenerator<SummarySection[], void, unknown> {
   const chunkPrompts = structuredChunks.map(
     (chunk, index) => `
@@ -44,39 +45,36 @@ Key Instructions:
 ### Chunk Data:
 Title: ${basicInfo.title}
 URL: ${basicInfo.url}
-Description: ${basicInfo.description || "None"}
+Description: ${basicInfo.description || 'None'}
 
 Content to summarize:
-${chunk
-  .map(
-    (p: StructuredParagraph) =>
-      `[ID:${p.id}] ${p.type.toUpperCase()}: "${p.preview}" | ${p.text}`
-  )
-  .join("\n")}
-`
+${chunk.map((p: StructuredParagraph) => `[ID:${p.id}] ${p.type.toUpperCase()}: "${p.preview}" | ${p.text}`).join('\n')}
+`,
   );
 
   for (const prompt of chunkPrompts) {
     try {
       const response = await ai.models.generateContentStream({
-        model: "gemini-2.5-flash",
+        model: 'gemini-2.5-flash',
         contents: [prompt],
         config: {
           temperature: 0.0,
           topP: 0.1,
-          responseMimeType: "application/json",
+          responseMimeType: 'application/json',
         },
       });
 
-      let accumulatedText = "";
+      let accumulatedText = '';
+
       for await (const chunk of response) {
-        accumulatedText += chunk.text || "";
+        accumulatedText += chunk.text || '';
       }
 
       const result = JSON.parse(accumulatedText || '{"sections": []}');
+
       yield result.sections || [];
     } catch (error) {
-      console.error("Chunk summarization error:", error);
+      console.error('Chunk summarization error:', error);
       yield [];
     }
   }
@@ -84,7 +82,7 @@ ${chunk
 
 async function* generateCoreSummaryStream(
   title: string,
-  allSections: SummarySection[]
+  allSections: SummarySection[],
 ): AsyncGenerator<string, void, unknown> {
   const prompt = `
 You are a professional news editor.
@@ -95,9 +93,7 @@ Based on the section summaries below, write a concise core summary of the entire
 Title: ${title}
 
 Section summaries:
-${allSections
-  .map((section) => `${section.title}: ${section.items?.join(", ") || ""}`)
-  .join("\n")}
+${allSections.map((section) => `${section.title}: ${section.items?.join(', ') || ''}`).join('\n')}
 
 Return only the core summary text (no JSON, no formatting).
 **Important: It must be written in Korean.**
@@ -105,7 +101,7 @@ Return only the core summary text (no JSON, no formatting).
 
   try {
     const response = await ai.models.generateContentStream({
-      model: "gemini-2.5-flash",
+      model: 'gemini-2.5-flash',
       contents: [prompt],
       config: {
         temperature: 0.0,
@@ -119,37 +115,32 @@ Return only the core summary text (no JSON, no formatting).
       }
     }
   } catch (error) {
-    console.error("Core summary error:", error);
-    yield "핵심 요약을 생성하는 중 오류가 발생했습니다.";
+    console.error('Core summary error:', error);
+    yield '핵심 요약을 생성하는 중 오류가 발생했습니다.';
   }
 }
 
 async function* summarizeContentStream(
-  content: ParsedContent
-): AsyncGenerator<
-  { type: "sections" | "coreSummary" | "complete"; data: any; error?: string },
-  void,
-  unknown
-> {
+  content: ParsedContent,
+): AsyncGenerator<{ type: 'sections' | 'coreSummary' | 'complete'; data: any; error?: string }, void, unknown> {
   try {
     if (!content.structuredText || content.structuredText.length === 0) {
       yield {
-        type: "complete",
+        type: 'complete',
         data: {
           ...content,
           summary: {
-            title: content.title || "제목 없음",
-            coreSummary: "구조화된 텍스트가 없어 요약을 생성할 수 없습니다.",
+            title: content.title || '제목 없음',
+            coreSummary: '구조화된 텍스트가 없어 요약을 생성할 수 없습니다.',
             sections: [],
           },
         },
       };
+
       return;
     }
 
-    const sortedStructuredText = content.structuredText.sort(
-      (a, b) => a.id - b.id
-    );
+    const sortedStructuredText = content.structuredText.sort((a, b) => a.id - b.id);
 
     const CHUNK_SIZE = Math.max(3, Math.ceil(sortedStructuredText.length / 4));
     const chunks = [];
@@ -166,71 +157,64 @@ async function* summarizeContentStream(
 
     const allSections: SummarySection[] = [];
 
-    for await (const sections of summarizeContentChunksStream(
-      chunks,
-      basicInfo
-    )) {
+    for await (const sections of summarizeContentChunksStream(chunks, basicInfo)) {
       allSections.push(...sections);
       yield {
-        type: "sections",
+        type: 'sections',
         data: sections,
       };
     }
 
-    let coreSummaryText = "";
-    for await (const chunk of generateCoreSummaryStream(
-      content.title,
-      allSections
-    )) {
+    let coreSummaryText = '';
+
+    for await (const chunk of generateCoreSummaryStream(content.title, allSections)) {
       coreSummaryText += chunk;
       yield {
-        type: "coreSummary",
+        type: 'coreSummary',
         data: chunk,
       };
     }
 
     yield {
-      type: "complete",
+      type: 'complete',
       data: {
         ...content,
         summary: {
-          title: content.title || "제목 없음",
+          title: content.title || '제목 없음',
           coreSummary: coreSummaryText,
           sections: allSections,
         },
       },
     };
   } catch (error) {
-    console.error("AI summarization error:", error);
+    console.error('AI summarization error:', error);
     yield {
-      type: "complete",
+      type: 'complete',
       data: {
         ...content,
         summary: {
-          title: "요약 생성 실패",
-          coreSummary: "AI 요약을 생성하는 중 오류가 발생했습니다.",
+          title: '요약 생성 실패',
+          coreSummary: 'AI 요약을 생성하는 중 오류가 발생했습니다.',
           sections: [],
         },
       },
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
 
-async function* parseContentStream(
-  url: string,
-  timeout?: number
-): AsyncGenerator<ParsedContent, void, unknown> {
+async function* parseContentStream(url: string, timeout?: number): AsyncGenerator<ParsedContent, void, unknown> {
   const content = await NhkHTMLParser.parseFromUrl(url, timeout);
+
   yield content;
 }
 
 async function* summarizeFromUrlStream(
   url: string,
-  timeout?: number
+  timeout?: number,
 ): AsyncGenerator<
   {
-    type: "metadata" | "sections" | "coreSummary" | "complete";
+    type: 'metadata' | 'sections' | 'coreSummary' | 'complete';
     data: any;
     error?: string;
   },
@@ -240,7 +224,7 @@ async function* summarizeFromUrlStream(
   for await (const content of parseContentStream(url, timeout)) {
     // 제목, 요약, 키워드
     yield {
-      type: "metadata",
+      type: 'metadata',
       data: {
         title: content.title,
         metadata: content.metadata,
@@ -260,14 +244,11 @@ export async function POST(request: NextRequest) {
     const { url, timeout, summarize = false } = body;
 
     if (!url) {
-      return NextResponse.json({ error: "URL is required" }, { status: 400 });
+      return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
-    if (typeof url !== "string") {
-      return NextResponse.json(
-        { error: "URL must be a string" },
-        { status: 400 }
-      );
+    if (typeof url !== 'string') {
+      return NextResponse.json({ error: 'URL must be a string' }, { status: 400 });
     }
 
     // Handle summarization with streaming
@@ -277,23 +258,20 @@ export async function POST(request: NextRequest) {
         async start(controller) {
           try {
             for await (const result of summarizeFromUrlStream(url, timeout)) {
-              const chunk = encoder.encode(
-                `data: ${JSON.stringify(result)}\n\n`
-              );
+              const chunk = encoder.encode(`data: ${JSON.stringify(result)}\n\n`);
+
               controller.enqueue(chunk);
             }
             controller.close();
           } catch (error) {
-            console.error("Streaming error:", error);
+            console.error('Streaming error:', error);
             const errorChunk = encoder.encode(
               `data: ${JSON.stringify({
-                type: "error",
-                error:
-                  error instanceof Error
-                    ? error.message
-                    : "Unknown error occurred",
-              })}\n\n`
+                type: 'error',
+                error: error instanceof Error ? error.message : 'Unknown error occurred',
+              })}\n\n`,
             );
+
             controller.enqueue(errorChunk);
             controller.close();
           }
@@ -302,9 +280,9 @@ export async function POST(request: NextRequest) {
 
       return new Response(readable, {
         headers: {
-          "Content-Type": "text/plain; charset=utf-8",
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
         },
       });
     }
@@ -318,11 +296,11 @@ export async function POST(request: NextRequest) {
             controller.enqueue(
               encoder.encode(
                 `data: ${JSON.stringify({
-                  type: "html",
-                  data: { message: "URL에서 HTML 가져오는 중..." },
+                  type: 'html',
+                  data: { message: 'URL에서 HTML 가져오는 중...' },
                   progress: 10,
-                })}\n\n`
-              )
+                })}\n\n`,
+              ),
             );
 
             const result = await NhkHTMLParser.parseFromUrl(url, timeout);
@@ -330,38 +308,31 @@ export async function POST(request: NextRequest) {
             controller.enqueue(
               encoder.encode(
                 `data: ${JSON.stringify({
-                  type: "metadata",
+                  type: 'metadata',
                   data: {
                     title: result.title,
                     metadata: result.metadata,
                   },
                   progress: 40,
-                })}\n\n`
-              )
+                })}\n\n`,
+              ),
             );
 
             if (result.structuredText && result.structuredText.length > 0) {
-              const chunkSize = Math.max(
-                1,
-                Math.ceil(result.structuredText.length / 3)
-              );
-              for (
-                let i = 0;
-                i < result.structuredText.length;
-                i += chunkSize
-              ) {
+              const chunkSize = Math.max(1, Math.ceil(result.structuredText.length / 3));
+
+              for (let i = 0; i < result.structuredText.length; i += chunkSize) {
                 const chunk = result.structuredText.slice(i, i + chunkSize);
-                const progress =
-                  40 + ((i + chunkSize) / result.structuredText.length) * 50;
+                const progress = 40 + ((i + chunkSize) / result.structuredText.length) * 50;
 
                 controller.enqueue(
                   encoder.encode(
                     `data: ${JSON.stringify({
-                      type: "paragraphs",
+                      type: 'paragraphs',
                       data: chunk,
                       progress: Math.min(90, progress),
-                    })}\n\n`
-                  )
+                    })}\n\n`,
+                  ),
                 );
 
                 await new Promise((resolve) => setTimeout(resolve, 100));
@@ -371,25 +342,23 @@ export async function POST(request: NextRequest) {
             controller.enqueue(
               encoder.encode(
                 `data: ${JSON.stringify({
-                  type: "complete",
+                  type: 'complete',
                   data: result,
                   progress: 100,
-                })}\n\n`
-              )
+                })}\n\n`,
+              ),
             );
 
             controller.close();
           } catch (error) {
-            console.error("URL parsing streaming error:", error);
+            console.error('URL parsing streaming error:', error);
             const errorChunk = encoder.encode(
               `data: ${JSON.stringify({
-                type: "error",
-                error:
-                  error instanceof Error
-                    ? error.message
-                    : "URL 파싱 중 오류가 발생했습니다.",
-              })}\n\n`
+                type: 'error',
+                error: error instanceof Error ? error.message : 'URL 파싱 중 오류가 발생했습니다.',
+              })}\n\n`,
             );
+
             controller.enqueue(errorChunk);
             controller.close();
           }
@@ -398,22 +367,21 @@ export async function POST(request: NextRequest) {
 
       return new Response(readable, {
         headers: {
-          "Content-Type": "text/plain; charset=utf-8",
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
         },
       });
     }
   } catch (error) {
-    console.error("Parse URL error:", error);
+    console.error('Parse URL error:', error);
 
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
         success: false,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

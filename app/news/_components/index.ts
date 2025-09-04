@@ -1,1 +1,1 @@
-export { NewsAnalyzeSection } from "./news-analyze-section";
+export { NewsAnalyzeSection } from './news-analyze-section';

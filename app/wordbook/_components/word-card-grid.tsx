@@ -1,10 +1,12 @@
-"use client";
+'use client';
 
-import { type Word, getWordbook, removeWordFromBook } from "@/lib/wordbook";
-import { useState, useEffect } from "react";
-import { WordCard } from "./word-card";
-import { WordDetailModal } from "./word-detail-modal";
-import { subtitle } from "@/components/primitives";
+import { useState, useEffect } from 'react';
+
+import { WordCard } from './word-card';
+import { WordDetailModal } from './word-detail-modal';
+
+import { type Word, getWordbook, removeWordFromBook } from '@/lib/wordbook';
+import { subtitle } from '@/components/primitives';
 
 export const WordCardGrid = () => {
   const [words, setWords] = useState<Word[]>([]);
@@ -36,22 +38,18 @@ export const WordCardGrid = () => {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
         {words.map((word) => (
           <WordCard
             key={word.id}
             word={word}
-            onDelete={() => handleDeleteWord(word.word_jp)}
             onClick={() => handleWordClick(word)}
+            onDelete={() => handleDeleteWord(word.word_jp)}
           />
         ))}
       </div>
 
-      <WordDetailModal
-        word={selectedWord}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
+      <WordDetailModal isOpen={isModalOpen} word={selectedWord} onClose={handleCloseModal} />
     </>
   );
 };

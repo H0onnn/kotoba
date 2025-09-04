@@ -1,19 +1,14 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import {
-  saveWordToBook,
-  isWordSaved,
-  removeWordFromBook,
-  subscribeWordbook,
-  type Word,
-} from '@/lib/wordbook';
 
-export const useWordSave = (word: Word) => {
+import { saveWordToBook, isWordSaved, removeWordFromBook, subscribeWordbook, type Word } from '@/lib/wordbook';
+
+export const useWordSave = (word?: Word | null) => {
   const isAlreadySaved = useSyncExternalStore(
     subscribeWordbook,
-    () => isWordSaved(word.word_jp),
-    () => false
+    () => (word ? isWordSaved(word.word_jp) : false),
+    () => false,
   );
 
   const handleSaveWord = () => {

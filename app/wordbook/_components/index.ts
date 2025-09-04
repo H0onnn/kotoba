@@ -1,1 +1,1 @@
-export { WordCardGrid } from "./word-card-grid";
+export { WordCardGrid } from './word-card-grid';
