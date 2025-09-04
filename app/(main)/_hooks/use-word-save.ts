@@ -1,32 +1,26 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from 'react';
 import {
   saveWordToBook,
   isWordSaved,
   removeWordFromBook,
+  subscribeWordbook,
   type Word,
-} from "@/lib/wordbook";
+} from '@/lib/wordbook';
 
 export const useWordSave = (word: Word) => {
-  const [isAlreadySaved, setIsAlreadySaved] = useState(() =>
-    word ? isWordSaved(word.word_jp) : false
+  const isAlreadySaved = useSyncExternalStore(
+    subscribeWordbook,
+    () => isWordSaved(word.word_jp),
+    () => false
   );
-
-  useEffect(() => {
-    if (word) {
-      setIsAlreadySaved(isWordSaved(word.word_jp));
-    } else {
-      setIsAlreadySaved(false);
-    }
-  }, [word?.word_jp]);
 
   const handleSaveWord = () => {
     if (!word) return;
 
     if (isAlreadySaved) {
       removeWordFromBook(word.word_jp);
-      setIsAlreadySaved(false);
     } else {
       saveWordToBook({
         word_jp: word.word_jp,
@@ -38,7 +32,6 @@ export const useWordSave = (word: Word) => {
         homonyms: word.homonyms,
         compounds: word.compounds,
       });
-      setIsAlreadySaved(true);
     }
   };
 
