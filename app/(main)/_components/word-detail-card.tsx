@@ -6,6 +6,7 @@ import { Card, CardHeader, CardBody, CardFooter } from '@heroui/card';
 import { Chip } from '@heroui/chip';
 import { Divider } from '@heroui/divider';
 import { Button } from '@heroui/button';
+import { cn } from '@heroui/theme';
 
 import { BookmarkFilledIcon, BookmarkIcon } from '@/components/icons';
 import { createHighlightedElements } from '@/utils/highlight';
@@ -40,7 +41,7 @@ const WordSection = ({ title, words, color, onWordClick }: WordSectionProps) => 
         {words.map((word, index) => (
           <Chip
             key={index}
-            className={`transition-colors cursor-pointer ${getHoverClass(color)}`}
+            className={cn('transition-colors cursor-pointer', getHoverClass(color))}
             color={color}
             variant='flat'
             onClick={() => onWordClick(word.word_jp)}
@@ -72,7 +73,7 @@ export const WordDetailCard = ({
   const cardClass = isAnalysis ? '!shadow-none !rounded-none !p-0' : '!p-4';
 
   return (
-    <Card className={`w-full dark:bg-black ${cardClass}`}>
+    <Card className={cn('w-full dark:bg-black', isAnalysis ? 'p-0 rounded-none shadow-none' : 'p-4')}>
       <CardHeader className='flex flex-col gap-2 items-start p-0 pb-4'>
         <div className='flex justify-between items-start w-full'>
           <div className='flex flex-col gap-2'>
