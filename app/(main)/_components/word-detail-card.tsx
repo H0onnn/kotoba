@@ -10,6 +10,7 @@ import { cn } from '@heroui/theme';
 
 import { BookmarkFilledIcon, BookmarkIcon } from '@/components/icons';
 import { createHighlightedElements } from '@/utils/highlight';
+import { TTS, TTSToggle } from './tts';
 
 type ChipColor = 'warning' | 'secondary' | 'success';
 
@@ -70,17 +71,18 @@ export const WordDetailCard = ({
   onSynonymClick,
   isAnalysis = false,
 }: WordDetailCardProps) => {
-  const cardClass = isAnalysis ? '!shadow-none !rounded-none !p-0' : '!p-4';
-
   return (
-    <Card className={cn('w-full dark:bg-black', isAnalysis ? 'p-0 rounded-none shadow-none' : 'p-4')}>
+    <Card className={cn('w-full', isAnalysis ? 'p-0 rounded-none shadow-none dark:bg-black' : 'p-4')}>
       <CardHeader className='flex flex-col gap-2 items-start p-0 pb-4'>
         <div className='flex justify-between items-start w-full'>
-          <div className='flex flex-col gap-2'>
-            <div className='flex gap-1 items-center'>
-              <Chip>{word.part_of_speech}</Chip>
-              <h2 className='text-2xl font-bold'>{word.word_jp}</h2>
-              <p className='text-lg text-gray-600'>({word.yomigana})</p>
+          <div className='flex flex-col flex-1 gap-2 min-w-0'>
+            <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
+              <div className='flex flex-wrap gap-1 items-center'>
+                <Chip>{word.part_of_speech}</Chip>
+                <h2 className='text-2xl font-bold'>{word.word_jp}</h2>
+                <p className='text-lg text-gray-600'>({word.yomigana})</p>
+              </div>
+              <TTS text={word.word_jp} />
             </div>
 
             <div className='flex gap-2 items-center'>
@@ -104,13 +106,16 @@ export const WordDetailCard = ({
         <div className='space-y-3'>
           {word.examples.map((example, index) => (
             <div key={index} className='p-3 bg-gray-50 rounded-lg dark:bg-gray-500'>
-              <p className='text-base font-medium'>
-                {createHighlightedElements(
-                  example.sentence_jp,
-                  example.highlight_word,
-                  'bg-yellow-200 dark:bg-yellow-600 font-semibold',
-                )}
-              </p>
+              <div className='flex gap-2 justify-between items-start'>
+                <p className='flex-1 text-base font-medium'>
+                  {createHighlightedElements(
+                    example.sentence_jp,
+                    example.highlight_word,
+                    'bg-yellow-200 dark:bg-yellow-600 font-semibold',
+                  )}
+                </p>
+                <TTSToggle text={example.sentence_jp} />
+              </div>
               <p className='mt-1 text-sm text-blue-600 dark:text-primary-100'>{example.meaning_kr}</p>
 
               {example.example_words && example.example_words.length > 0 && (
